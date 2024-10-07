@@ -1,44 +1,50 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { saveToFile, loadStateFromFile } from "./utils/FileSystem";
+import { saveToFile, openFile } from "./utils/FileSystem";
 
 export type State = {
   projectTitle: string;
-  fileHandle: FileSystemFileHandle | null;
+};
+
+// define the initial state
+const initialState: State = {
+  projectTitle: "Untitled Project",
 };
 
 type Action = {
   updateProjectTitle: (title: string) => void;
-  updateFileHandle: (fileHandle: FileSystemFileHandle) => void;
   saveState: () => void;
-  loadState: (file: File) => void;
+  loadState: () => void;
+  resetState: () => void;
 };
 
 export const useStore = create<State & Action>()(
   persist(
     (set) => ({
-      projectTitle: "Untitled Project",
-      fileHandle: null,
+      ...initialState,
       updateProjectTitle: (projectTitle: string) =>
         set(() => ({ projectTitle: projectTitle })),
-      updateFileHandle: (fileHandle: FileSystemFileHandle) =>
-        set(() => ({ fileHandle: fileHandle })),
-      saveState: () => {
+      saveState: async () => {
         const state = useStore.getState();
-        saveToFile(
+        await saveToFile(
           state,
           `${useStore.getState().projectTitle}.json`,
-          useStore.getState().fileHandle,
-          useStore.getState().updateFileHandle
+          window.handle
         );
       },
-      loadState: async (file: File) => {
+      loadState: async () => {
         try {
-          const loadedState = await loadStateFromFile(file);
+          const loadedState = await openFile();
           set(loadedState);
         } catch (error) {
           console.error("Error loading data:", error);
         }
+      },
+      resetState: () => {
+        set(initialState);
+        window.handle = undefined;
+        console.log("State reset");
+        console.log(window.handle);
       },
     }),
     {

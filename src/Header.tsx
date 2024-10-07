@@ -1,7 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Button } from "./components/ui/button";
 import { FilePlus, FolderOpen, Menu, Save } from "lucide-react";
-import { TitleContext } from "./contexts/titleContext";
 import { Input } from "./components/ui/input";
 import { useToast } from "./hooks/use-toast";
 import {
@@ -12,27 +11,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Data } from "./Types";
-// import { loadFromJSON, saveAsJSON } from "./utils/fileSystem";
 import { useStore } from "./Store";
 
 function Header() {
   const { toast } = useToast();
-  const { saveState, loadState } = useStore();
+  const { saveState, loadState, resetState } = useStore();
   const projectTitle = useStore((state) => state.projectTitle);
   const updateProjectTitle = useStore((state) => state.updateProjectTitle);
 
-  const handleSave = () => {
-    saveState();
-  };
-
-  const handleLoad = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      loadState(file);
+  const handleSave = async () => {
+    try {
+      toast({
+        title: "Saving...",
+        description: "Your project is being saved.",
+      });
+      await saveState();
       toast({
         title: "Success",
-        description: "Data loaded successfully",
+        description: "Your project was saved",
+      });
+    } catch (error) {
+      console.error("Error saving file:", error);
+      toast({
+        title: "Error",
+        description: "There was an error saving your project",
+        variant: "destructive",
       });
     }
   };
@@ -46,19 +49,14 @@ function Header() {
             <Menu className="size-5" />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={resetState}>
               {" "}
               <FilePlus className="size-5 mr-2" />
               New Project
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={loadState}>
               <FolderOpen className="size-5 mr-2" />
-              <input
-                type="file"
-                onChange={handleLoad}
-                accept=".json"
-                onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
-              />
+              Open
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Save className="size-5 mr-2" />
@@ -71,8 +69,6 @@ function Header() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
-        {/* <Button variant="outline" size="default" aria-label="Home"></Button> */}
       </div>
       <Input
         type="text"

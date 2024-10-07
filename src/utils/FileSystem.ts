@@ -1,80 +1,54 @@
-import { saveAs } from "file-saver";
+import { fileOpen, fileSave } from "browser-fs-access";
 
-export const saveStateToFile = (state: any, fileName: string) => {
-  const blob = new Blob([JSON.stringify(state)], { type: "application/json" });
-  saveAs(blob, fileName);
-};
-
-export const loadStateFromFile = (file: File): Promise<any> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const state = JSON.parse(event.target?.result as string);
-        resolve(state);
-      } catch (error) {
-        reject(error);
-      }
-    };
-    reader.onerror = (error) => reject(error);
-    reader.readAsText(file);
-  });
-};
-
-export const saveAsToFile = async (
-  state: any,
-  fileName: string = "Untitled Project.json",
-  updateFileHandle: (handle: FileSystemFileHandle) => void
-): Promise<void> => {
-  try {
-    // Request permission to access files
-    const fileHandle = await window.showSaveFilePicker({
-      suggestedName: fileName,
-      types: [
-        {
-          description: "JSON File",
-          accept: { "application/json": [".json"] },
-        },
-      ],
-    });
-
-    // Create a FileSystemWritableFileStream to write to
-    const writable = await fileHandle.createWritable();
-
-    // Write the contents of the file
-    await writable.write(JSON.stringify(state));
-
-    // Close the file and write the contents to disk
-    await writable.close();
-
-    // Save the file handle to state
-    updateFileHandle(fileHandle);
-
-    console.log("File saved successfully");
-  } catch (error) {
-    console.error("Error saving file:", error);
-    throw error;
+declare global {
+  interface Window {
+    handle: FileSystemFileHandle | undefined;
   }
-};
+}
 
 export const saveToFile = async (
   state: any,
   fileName: string,
-  fileHandle: FileSystemFileHandle | null,
-  updateFileHandle: (handle: FileSystemFileHandle) => void
-): Promise<void> => {
-  if (!fileHandle) {
-    await saveAsToFile(state, fileName, updateFileHandle);
-    return;
-  }
+  handle?: FileSystemFileHandle | undefined
+) => {
+  const blob = new Blob([JSON.stringify(state)], { type: "application/json" });
+  await fileSave(
+    blob, //blob to save
+    { fileName: fileName }, //Options
+    handle //Link to existing file handle if saving over existing file. If undefined, will save as new file.
+  )
+    .then((result) => {
+      if (result != undefined) window.handle = result; //Set handle so future saves will go to this file
+      return result;
+    })
+    .catch((error) => {
+      return error;
+    });
+};
 
+export const openFile = async (): Promise<any> => {
   try {
-    const writable = await fileHandle.createWritable();
-    await writable.write(JSON.stringify(state));
-    await writable.close();
-    console.log("File updated successfully");
+    // Open file picker
+    const blob = await fileOpen({
+      mimeTypes: ["application/json"],
+    });
+
+    //Set handle so future saves will go to this file
+    if (blob.handle) {
+      console.log("Blob had a handle", blob.handle);
+      window.handle = blob.handle;
+
+      // Get the File object
+      const file = await blob.handle.getFile();
+
+      // Read and parse the file contents
+      const contents = await file.text();
+      const state = JSON.parse(contents);
+
+      return state;
+    }
   } catch (error) {
-    console.error("Error updating file:", error);
+    console.error("Error opening file:", error);
     throw error;
   }
 };
