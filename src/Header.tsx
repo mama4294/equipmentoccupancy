@@ -15,17 +15,21 @@ import { useStore } from "./Store";
 
 function Header() {
   const { toast } = useToast();
-  const { saveState, loadState, resetState } = useStore();
+  const { saveState, saveAsState, loadState, resetState } = useStore();
   const projectTitle = useStore((state) => state.projectTitle);
   const updateProjectTitle = useStore((state) => state.updateProjectTitle);
 
-  const handleSave = async () => {
+  const handleSave = async (type: "save" | "saveAs") => {
     try {
       toast({
         title: "Saving...",
         description: "Your project is being saved.",
       });
-      await saveState();
+      if (type === "save") {
+        await saveState();
+      } else {
+        await saveAsState();
+      }
       toast({
         title: "Success",
         description: "Your project was saved",
@@ -58,11 +62,11 @@ function Header() {
               <FolderOpen className="size-5 mr-2" />
               Open
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleSave("save")}>
               <Save className="size-5 mr-2" />
               Save
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleSave("saveAs")}>
               {" "}
               <Save className="size-5 mr-2" />
               Save As
@@ -83,7 +87,7 @@ function Header() {
         variant="outline"
         size="sm"
         className="ml-auto gap-1.5 text-sm"
-        onClick={handleSave}
+        onClick={() => handleSave("save")}
       >
         <Save className="size-3.5" />
         Save

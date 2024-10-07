@@ -14,6 +14,7 @@ const initialState: State = {
 type Action = {
   updateProjectTitle: (title: string) => void;
   saveState: () => void;
+  saveAsState: () => void;
   loadState: () => void;
   resetState: () => void;
 };
@@ -31,6 +32,10 @@ export const useStore = create<State & Action>()(
           `${useStore.getState().projectTitle}.json`,
           window.handle
         );
+      },
+      saveAsState: async () => {
+        const state = useStore.getState();
+        await saveToFile(state, `${useStore.getState().projectTitle}.json`);
       },
       loadState: async () => {
         try {
