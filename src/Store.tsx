@@ -20,6 +20,7 @@ type Action = {
   loadState: () => void;
   resetState: () => void;
   addProcedure: (procedure: Procedure) => void;
+  updateProcedure: (procedure: Procedure) => void;
 };
 
 export const useStore = create<State & Action>()(
@@ -56,6 +57,12 @@ export const useStore = create<State & Action>()(
       },
       addProcedure: (procedure: Procedure) =>
         set((state) => ({ procedures: [...state.procedures, procedure] })),
+      updateProcedure: (procedure: Procedure) =>
+        set((state) => ({
+          procedures: state.procedures.map((p) =>
+            p.id === procedure.id ? procedure : p
+          ),
+        })),
     }),
     {
       name: "equipment-occupancy-data", // (must be unique)

@@ -39,13 +39,19 @@ import {
 } from "./components/ui/select";
 
 type Props = {
-  procedureToEdit?: Procedure;
+  procedureToEdit?: Procedure | null;
+  setProcedureToEdit: (procedure: Procedure | null) => void;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
 };
 
-const EditProcedure = ({ procedureToEdit, isOpen, setIsOpen }: Props) => {
-  const { addProcedure } = useStore();
+const EditProcedure = ({
+  procedureToEdit,
+  setProcedureToEdit,
+  isOpen,
+  setIsOpen,
+}: Props) => {
+  const { addProcedure, updateProcedure } = useStore();
 
   const initialOperation: Operation = {
     id: uuidv4(),
@@ -106,7 +112,7 @@ const EditProcedure = ({ procedureToEdit, isOpen, setIsOpen }: Props) => {
 
   const handleSubmit = () => {
     if (procedureToEdit) {
-      //   updateProcedure(procedure);
+      updateProcedure(procedure);
     } else {
       addProcedure(procedure);
     }
@@ -136,7 +142,10 @@ const EditProcedure = ({ procedureToEdit, isOpen, setIsOpen }: Props) => {
       <DrawerTrigger asChild>
         <Button
           variant="outline"
-          onClick={() => setProcedure(initialProcedure)}
+          onClick={() => {
+            setProcedureToEdit(null);
+            setProcedure(initialProcedure);
+          }}
         >
           New Process
         </Button>

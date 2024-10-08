@@ -10,15 +10,14 @@ import {
   CardTitle,
 } from "./components/ui/card";
 import { Badge } from "./components/ui/badge";
-import { DrawerTrigger } from "./components/ui/drawer";
-import { Button } from "./components/ui/button";
 import { useState } from "react";
 import { Procedure } from "./Types";
 
 function Dashboard() {
   const { procedures } = useStore();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // New state for the drawer
-  const [selectedProcedure, setSelectedProcedure] = useState<Procedure>();
+  const [selectedProcedure, setSelectedProcedure] =
+    useState<Procedure | null>();
 
   return (
     <div className="h-screen w-screen ">
@@ -41,6 +40,7 @@ function Dashboard() {
                 </div>
                 <EditProcedure
                   procedureToEdit={selectedProcedure}
+                  setProcedureToEdit={setSelectedProcedure}
                   isOpen={isDrawerOpen}
                   setIsOpen={setIsDrawerOpen}
                 />
