@@ -3,7 +3,7 @@ import { deleteById } from "../utils/arrayLogic";
 import { calcGanttLogic, calcEOCLogic } from "../utils/ganttLogic";
 import { generateId } from "../utils/helperFunctions";
 
-const defaultEquipmentData = [
+const defaultEquipmentData: Equipment[] = [
   {
     id: "193e230f",
     title: "Mixer",

@@ -1,14 +1,16 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { saveToFile, openFile } from "./utils/FileSystem";
+import { Procedure, State } from "./Types";
 
-export type State = {
-  projectTitle: string;
-};
+//Procedure: Fermentation
+//Operation: Mixing
+//Equipment: V-3200
 
 // define the initial state
 const initialState: State = {
   projectTitle: "Untitled Project",
+  procedures: [],
 };
 
 type Action = {
@@ -17,6 +19,7 @@ type Action = {
   saveAsState: () => void;
   loadState: () => void;
   resetState: () => void;
+  addProcedure: (procedure: Procedure) => void;
 };
 
 export const useStore = create<State & Action>()(
@@ -51,6 +54,8 @@ export const useStore = create<State & Action>()(
         console.log("State reset");
         console.log(window.handle);
       },
+      addProcedure: (procedure: Procedure) =>
+        set((state) => ({ procedures: [...state.procedures, procedure] })),
     }),
     {
       name: "equipment-occupancy-data", // (must be unique)
