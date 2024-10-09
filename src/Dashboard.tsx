@@ -1,7 +1,22 @@
+import React, { useEffect, useMemo } from "react";
 import Header from "./Header";
 import EquipmentOccupancyChart from "./EquipmentOccupancyChart";
+import { useStore } from "./Store";
+import { calculateTiming } from "./utils/ganttLogic";
 
 function Dashboard() {
+  const { equipment } = useStore();
+
+  const calculatedEquipment = useMemo(
+    () => calculateTiming(equipment),
+    [equipment]
+  );
+
+  // Move this to a useEffect if you want to log after each render
+  // useEffect(() => {
+  //   console.table(equipment.flatMap((p) => p.operations));
+  // }, [equipment]);
+
   return (
     <div className="h-screen w-screen ">
       <div className="flex flex-col">
@@ -12,7 +27,9 @@ function Dashboard() {
             x-chunk="dashboard-03-chunk-0"
           >
             <div className="w-full">
-              <EquipmentOccupancyChart />
+              <EquipmentOccupancyChart
+                calculatedEquipment={calculatedEquipment}
+              />
             </div>
           </div>
         </main>

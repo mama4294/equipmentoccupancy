@@ -33,24 +33,15 @@ import { Button } from "./components/ui/button";
 import { useStore } from "./Store";
 import EditProcedure from "./EditEquipment";
 
-export default function EOChart() {
+export default function EOChart({
+  calculatedEquipment,
+}: {
+  calculatedEquipment: Equipment[];
+}) {
   const { equipment } = useStore();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // New state for the drawer
   const [selectedEquipment, setSelectedEquipment] =
     useState<Equipment | null>();
-
-  //   const calculatedEquipment = useMemo(
-  //     () => calculateTiming(equipment),
-  //     [equipment]
-  //   );
-
-  // console.log("Before calculation...");
-  // console.table(equipment.flatMap((p) => p.operations));
-
-  const calculatedEquipment = calculateTiming(equipment);
-
-  // console.log("After calculation.... ");
-  // console.table(calculatedEquipment.flatMap((p) => p.operations));
 
   const maxDuration = useMemo(() => {
     return Math.max(
@@ -167,18 +158,18 @@ const OperationBar: React.FC<{
   const startPercentage = (operation.start / maxDuration) * 100;
   const widthPercentage =
     ((operation.end - operation.start) / maxDuration) * 100;
-  console.log(
-    "operation: ",
-    operation.name,
-    "start: ",
-    operation.start,
-    "end: ",
-    operation.end,
-    "start %: ",
-    startPercentage,
-    "width %: ",
-    widthPercentage
-  );
+  // console.log(
+  //   "operation: ",
+  //   operation.name,
+  //   "start: ",
+  //   operation.start,
+  //   "end: ",
+  //   operation.end,
+  //   "start %: ",
+  //   startPercentage,
+  //   "width %: ",
+  //   widthPercentage
+  // );
 
   return (
     <TooltipProvider>

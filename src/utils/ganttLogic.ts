@@ -1,17 +1,23 @@
 import { DurationUnit, Operation, Equipment } from "../Types";
 
-export const calculateTiming = (equipement: Equipment[]): Equipment[] => {
+export const calculateTiming = (equipment: Equipment[]): Equipment[] => {
+  // Create a deep copy of the equipment array
+  const equipmentCopy = JSON.parse(JSON.stringify(equipment));
+
   // Create a map to store all operations with initial start and end times
   const operationsMap = new Map<string, Operation>();
 
   // Populate the map with all operations from all equipment and initialize start and end times to 0
-  equipement.forEach((equipment) => {
-    equipment.operations.forEach((operation) => {
-      operationsMap.set(operation.id, { ...operation, start: 0, end: 0 });
+  equipment.forEach((eq: Equipment) => {
+    eq.operations = eq.operations.map((operation) => ({
+      ...operation,
+      start: 0,
+      end: 0,
+    }));
+    eq.operations.forEach((operation: Operation) => {
+      operationsMap.set(operation.id, operation);
     });
   });
-
-  console.table(operationsMap);
 
   // Recursive function to calculate timing for a single operation
   const calculateOperationTiming = (operation: Operation): void => {
@@ -35,42 +41,43 @@ export const calculateTiming = (equipement: Equipment[]): Equipment[] => {
     );
 
     // Calculate start and end times based on predecessor relation
+    let start, end;
     if (!predecessor || predecessor.id === "initial") {
       // If no predecessor, start after offset
-      operation.start = offset;
-      operation.end = offset + duration;
+      start = offset;
+      end = offset + duration;
     } else {
       // Calculate start time based on predecessor relation
       switch (operation.predecessorRelation) {
         case "finish-to-start":
-          operation.start = predecessor.end + offset;
+          start = predecessor.end + offset;
           break;
         case "start-to-start":
-          operation.start = predecessor.start + offset;
+          start = predecessor.start + offset;
           break;
         case "finish-to-finish":
-          operation.start = predecessor.end - duration + offset;
+          start = predecessor.end - duration + offset;
           break;
         case "start-to-finish":
-          operation.start = predecessor.start - duration + offset;
+          start = predecessor.start - duration + offset;
           break;
       }
-      operation.end = operation.start + duration;
+      end = start + duration;
     }
 
-    // Update the operation in the map
-    operationsMap.set(operation.id, operation);
+    // Update the operation in the map with a new object
+    operationsMap.set(operation.id, { ...operation, start, end });
   };
 
   // Calculate timing for all operations in all equipment
-  equipement.forEach((procedure) => {
-    procedure.operations.forEach(calculateOperationTiming);
+  equipmentCopy.forEach((eq: Equipment) => {
+    eq.operations.forEach(calculateOperationTiming);
   });
 
   // Return updated equipment with calculated timings
-  return equipement.map((procedure) => ({
-    ...procedure,
-    operations: procedure.operations.map((op) => operationsMap.get(op.id)!),
+  return equipmentCopy.map((eq: Equipment) => ({
+    ...eq,
+    operations: eq.operations.map((op: Operation) => operationsMap.get(op.id)!),
   }));
 };
 

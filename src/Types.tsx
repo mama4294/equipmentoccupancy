@@ -33,7 +33,7 @@ export type Operation = {
   name: string;
   duration: number;
   durationUnit: DurationUnit;
-  predecessorId: Predecessor;
+  predecessor: Predecessor;
   predecessorRelation: predecessorRelation;
   offset: number;
   offsetUnit: DurationUnit;
