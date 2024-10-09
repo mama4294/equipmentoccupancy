@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "./components/ui/button";
 import { Label } from "./components/ui/label";
@@ -28,7 +28,7 @@ import {
   DurationUnit,
   Operation,
   predecessorRelation,
-  Procedure,
+  Equipment,
 } from "./Types";
 import {
   Select,
@@ -39,19 +39,19 @@ import {
 } from "./components/ui/select";
 
 type Props = {
-  procedureToEdit?: Procedure | null;
-  setProcedureToEdit: (procedure: Procedure | null) => void;
+  equipmentToEdit?: Equipment | null;
+  setEquipmentToEdit: (procedure: Equipment | null) => void;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
 };
 
 const EditProcedure = ({
-  procedureToEdit,
-  setProcedureToEdit,
+  equipmentToEdit,
+  setEquipmentToEdit,
   isOpen,
   setIsOpen,
 }: Props) => {
-  const { addProcedure, updateProcedure } = useStore();
+  const { addEquipment, updateEquipment } = useStore();
 
   const initialOperation: Operation = {
     id: uuidv4(),
@@ -59,7 +59,7 @@ const EditProcedure = ({
     duration: 0,
     durationUnit: "hr",
     predecessor: { id: "", name: "", external: false },
-    predecessorRelation: "start-to-finish",
+    predecessorRelation: "finish-to-start",
     offset: 0,
     offsetUnit: "hr",
     resources: [],
@@ -68,30 +68,29 @@ const EditProcedure = ({
     parentId: "",
   };
 
-  const initialProcedure: Procedure = {
+  const initialEquipment: Equipment = {
     id: uuidv4(),
     name: "",
-    equipmentTag: "",
     operations: [initialOperation],
   };
 
-  const [procedure, setProcedure] = useState<Procedure>(initialProcedure);
+  const [equipment, setEquipment] = useState<Equipment>(initialEquipment);
 
   useEffect(() => {
-    if (procedureToEdit) {
-      setProcedure(procedureToEdit);
+    if (equipmentToEdit) {
+      setEquipment(equipmentToEdit);
     }
-  }, [procedureToEdit]);
+  }, [equipmentToEdit]);
 
   const handleAddOperation = () => {
-    setProcedure((prev) => ({
+    setEquipment((prev) => ({
       ...prev,
       operations: [...prev.operations, { ...initialOperation, id: uuidv4() }],
     }));
   };
 
   const handleRemoveOperation = (id: string) => {
-    setProcedure((prev) => ({
+    setEquipment((prev) => ({
       ...prev,
       operations: prev.operations.filter((op) => op.id !== id),
     }));
@@ -102,7 +101,7 @@ const EditProcedure = ({
     field: keyof Operation,
     value: any
   ) => {
-    setProcedure((prev) => ({
+    setEquipment((prev) => ({
       ...prev,
       operations: prev.operations.map((op) =>
         op.id === id ? { ...op, [field]: value } : op
@@ -111,17 +110,17 @@ const EditProcedure = ({
   };
 
   const handleSubmit = () => {
-    if (procedureToEdit) {
-      updateProcedure(procedure);
+    if (equipmentToEdit) {
+      updateEquipment(equipment);
     } else {
-      addProcedure(procedure);
+      addEquipment(equipment);
     }
     setIsOpen(false);
   };
 
   useEffect(() => {
     // Update predecessors when operations change
-    setProcedure((prev) => ({
+    setEquipment((prev) => ({
       ...prev,
       operations: prev.operations.map((op, index) => ({
         ...op,
@@ -135,7 +134,7 @@ const EditProcedure = ({
               },
       })),
     }));
-  }, [procedure.operations.length]);
+  }, [equipment.operations.length]);
 
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
@@ -143,33 +142,33 @@ const EditProcedure = ({
         <Button
           variant="outline"
           onClick={() => {
-            setProcedureToEdit(null);
-            setProcedure(initialProcedure);
+            setEquipmentToEdit(null);
+            setEquipment(initialEquipment);
           }}
         >
-          New Process
+          New Eequipment
         </Button>
       </DrawerTrigger>
       <DrawerContent className="h-[80vh]">
         <DrawerHeader className="text-left">
           <DrawerTitle>
-            {procedureToEdit ? "Edit" : "New"} Procedure
+            {equipmentToEdit ? "Edit" : "New"} Equipment
           </DrawerTitle>
           <DrawerDescription>
-            {procedureToEdit ? "Edit an existing" : "Add a new"} procedure with
+            {equipmentToEdit ? "Edit an existing" : "Add a new"} equipment with
             multiple operations.
           </DrawerDescription>
         </DrawerHeader>
         <div className="p-4 pb-0">
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="title">Procedure Name</Label>
+              <Label htmlFor="title">Equipment Name</Label>
               <Input
                 id="title"
                 placeholder="Fermentation"
-                value={procedure.name}
+                value={equipment.name}
                 onChange={(e) =>
-                  setProcedure((prev) => ({ ...prev, name: e.target.value }))
+                  setEquipment((prev) => ({ ...prev, name: e.target.value }))
                 }
               />
             </div>
@@ -187,7 +186,7 @@ const EditProcedure = ({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {procedure.operations.map((operation, index) => (
+                  {equipment.operations.map((operation, index) => (
                     <TableRow key={operation.id}>
                       <TableCell>
                         <Input
@@ -253,7 +252,7 @@ const EditProcedure = ({
                                 : {
                                     id: value,
                                     name:
-                                      procedure.operations.find(
+                                      equipment.operations.find(
                                         (op) => op.id === value
                                       )?.name || "",
                                     external: false,
@@ -272,11 +271,11 @@ const EditProcedure = ({
                             {index === 0 && (
                               <SelectItem value="initial">Initial</SelectItem>
                             )}
-                            {procedure.operations.slice(0, index).map((op) => (
+                            {equipment.operations.slice(0, index).map((op) => (
                               <SelectItem key={op.id} value={op.id}>
                                 {op.name ||
                                   `Operation ${
-                                    procedure.operations.indexOf(op) + 1
+                                    equipment.operations.indexOf(op) + 1
                                   }`}
                               </SelectItem>
                             ))}
@@ -371,7 +370,7 @@ const EditProcedure = ({
         </div>
         <DrawerFooter className="pt-2">
           <Button onClick={handleSubmit}>
-            {procedureToEdit ? "Update" : "Save"} Procedure
+            {equipmentToEdit ? "Update" : "Save"} Equipment
           </Button>
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>

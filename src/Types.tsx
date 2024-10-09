@@ -1,6 +1,6 @@
 export type State = {
   projectTitle: string;
-  procedures: Procedure[];
+  equipment: Equipment[];
   // batches: Batch[];
   // resourceOptions: ResourceOption[];
 };
@@ -8,7 +8,6 @@ export type State = {
 type Resource = {
   title: string;
   id: string;
-  // color: string;
   unit: string;
   label: string;
   value: string;
@@ -34,7 +33,7 @@ export type Operation = {
   name: string;
   duration: number;
   durationUnit: DurationUnit;
-  predecessor: Predecessor;
+  predecessorId: Predecessor;
   predecessorRelation: predecessorRelation;
   offset: number;
   offsetUnit: DurationUnit;
@@ -44,10 +43,9 @@ export type Operation = {
   parentId: string;
 };
 
-export type Procedure = {
+export type Equipment = {
   id: string;
   name: string;
-  equipmentTag: string;
   operations: Operation[];
   // duration: number;
 };

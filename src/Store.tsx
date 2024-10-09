@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { saveToFile, openFile } from "./utils/FileSystem";
-import { Procedure, State } from "./Types";
+import { Equipment, State } from "./Types";
 
 //Procedure: Fermentation
 //Operation: Mixing
@@ -10,7 +10,7 @@ import { Procedure, State } from "./Types";
 // define the initial state
 const initialState: State = {
   projectTitle: "Untitled Project",
-  procedures: [],
+  equipment: [],
 };
 
 type Action = {
@@ -19,8 +19,10 @@ type Action = {
   saveAsState: () => void;
   loadState: () => void;
   resetState: () => void;
-  addProcedure: (procedure: Procedure) => void;
-  updateProcedure: (procedure: Procedure) => void;
+  addEquipment: (procedure: Equipment) => void;
+  updateEquipment: (procedure: Equipment) => void;
+  deleteEquipment: (procedure: Equipment) => void;
+  duplicateEquipment: (procedure: Equipment) => void;
 };
 
 export const useStore = create<State & Action>()(
@@ -52,16 +54,22 @@ export const useStore = create<State & Action>()(
       resetState: () => {
         set(initialState);
         window.handle = undefined;
-        console.log("State reset");
-        console.log(window.handle);
       },
-      addProcedure: (procedure: Procedure) =>
-        set((state) => ({ procedures: [...state.procedures, procedure] })),
-      updateProcedure: (procedure: Procedure) =>
+      addEquipment: (equipment: Equipment) =>
+        set((state) => ({ equipment: [...state.equipment, equipment] })),
+      updateEquipment: (equipment: Equipment) =>
         set((state) => ({
-          procedures: state.procedures.map((p) =>
-            p.id === procedure.id ? procedure : p
+          equipment: state.equipment.map((p) =>
+            p.id === equipment.id ? equipment : p
           ),
+        })),
+      deleteEquipment: (equipment: Equipment) =>
+        set((state) => ({
+          equipment: state.equipment.filter((p) => p.id !== equipment.id),
+        })),
+      duplicateEquipment: (equipment: Equipment) =>
+        set((state) => ({
+          equipment: [...state.equipment, { ...equipment }],
         })),
     }),
     {
