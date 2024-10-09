@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import { calculateTiming } from "./utils/ganttLogic";
 import { Operation, Equipment } from "./Types";
 import {
   MoreVertical,
@@ -38,7 +37,6 @@ export default function EOChart({
 }: {
   calculatedEquipment: Equipment[];
 }) {
-  const { equipment } = useStore();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // New state for the drawer
   const [selectedEquipment, setSelectedEquipment] =
     useState<Equipment | null>();
@@ -158,18 +156,6 @@ const OperationBar: React.FC<{
   const startPercentage = (operation.start / maxDuration) * 100;
   const widthPercentage =
     ((operation.end - operation.start) / maxDuration) * 100;
-  // console.log(
-  //   "operation: ",
-  //   operation.name,
-  //   "start: ",
-  //   operation.start,
-  //   "end: ",
-  //   operation.end,
-  //   "start %: ",
-  //   startPercentage,
-  //   "width %: ",
-  //   widthPercentage
-  // );
 
   return (
     <TooltipProvider>

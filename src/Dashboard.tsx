@@ -13,9 +13,9 @@ function Dashboard() {
   );
 
   // Move this to a useEffect if you want to log after each render
-  // useEffect(() => {
-  //   console.table(equipment.flatMap((p) => p.operations));
-  // }, [equipment]);
+  useEffect(() => {
+    console.table(equipment.flatMap((p) => p.operations));
+  }, [equipment]);
 
   return (
     <div className="h-screen w-screen ">

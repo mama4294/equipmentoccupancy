@@ -58,7 +58,7 @@ const EditProcedure = ({
     name: "",
     duration: 0,
     durationUnit: "hr",
-    predecessor: { id: "", name: "", external: false },
+    predecessorId: "", // Change this from predecessor object to string
     predecessorRelation: "finish-to-start",
     offset: 0,
     offsetUnit: "hr",
@@ -124,14 +124,7 @@ const EditProcedure = ({
       ...prev,
       operations: prev.operations.map((op, index) => ({
         ...op,
-        predecessor:
-          index === 0
-            ? { id: "initial", name: "Initial", external: false }
-            : {
-                id: prev.operations[index - 1].id,
-                name: prev.operations[index - 1].name,
-                external: false,
-              },
+        predecessorId: index === 0 ? "initial" : prev.operations[index - 1].id,
       })),
     }));
   }, [equipment.operations.length]);
@@ -240,27 +233,12 @@ const EditProcedure = ({
                       </TableCell>
                       <TableCell className="p-2">
                         <Select
-                          value={operation.predecessor.id}
+                          value={operation.predecessorId}
                           onValueChange={(value: string) => {
-                            const predecessor =
-                              value === "initial"
-                                ? {
-                                    id: "initial",
-                                    name: "Initial",
-                                    external: false,
-                                  }
-                                : {
-                                    id: value,
-                                    name:
-                                      equipment.operations.find(
-                                        (op) => op.id === value
-                                      )?.name || "",
-                                    external: false,
-                                  };
                             handleOperationChange(
                               operation.id,
-                              "predecessor",
-                              predecessor
+                              "predecessorId",
+                              value
                             );
                           }}
                         >

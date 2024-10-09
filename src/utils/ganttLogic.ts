@@ -8,8 +8,8 @@ export const calculateTiming = (equipment: Equipment[]): Equipment[] => {
   const operationsMap = new Map<string, Operation>();
 
   // Populate the map with all operations from all equipment and initialize start and end times to 0
-  equipment.forEach((eq: Equipment) => {
-    eq.operations = eq.operations.map((operation) => ({
+  equipmentCopy.forEach((eq: Equipment) => {
+    eq.operations = eq.operations.map((operation: Operation) => ({
       ...operation,
       start: 0,
       end: 0,
@@ -25,9 +25,10 @@ export const calculateTiming = (equipment: Equipment[]): Equipment[] => {
     if (operation.start !== 0 && operation.end !== 0) return;
 
     // Get predecessor operation if it exists
-    const predecessor = operation.predecessor
-      ? operationsMap.get(operation.predecessor.id)
-      : null;
+    const predecessor =
+      operation.predecessorId !== "initial"
+        ? operationsMap.get(operation.predecessorId)
+        : null;
     // Recursively calculate timing for predecessor
     if (predecessor) {
       calculateOperationTiming(predecessor);
