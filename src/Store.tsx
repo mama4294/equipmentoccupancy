@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { saveToFile, openFile } from "./utils/FileSystem";
 import { Equipment, State } from "./Types";
+import { v4 as uuidv4 } from "uuid";
 
 //Procedure: Fermentation
 //Operation: Mixing
@@ -71,7 +72,17 @@ export const useStore = create<State & Action>()(
         })),
       duplicateEquipment: (equipment: Equipment) =>
         set((state) => ({
-          equipment: [...state.equipment, { ...equipment }],
+          equipment: [
+            ...state.equipment,
+            {
+              ...equipment,
+              id: uuidv4(),
+              operations: equipment.operations.map((operation) => ({
+                ...operation,
+                id: uuidv4(),
+              })),
+            },
+          ],
         })),
       moveEquipmentUp: (equipmentId: string) =>
         set((state) => {

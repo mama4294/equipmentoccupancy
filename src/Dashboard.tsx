@@ -1,16 +1,32 @@
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "./Header";
 import EquipmentOccupancyChart from "./EquipmentOccupancyChart";
 import { useStore } from "./Store";
 import { calculateTiming } from "./utils/ganttLogic";
+import { AlertTriangleIcon } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useToast } from "./hooks/use-toast";
 
 function Dashboard() {
   const { equipment } = useStore();
+  const { toast } = useToast();
 
-  const calculatedEquipment = useMemo(
-    () => calculateTiming(equipment),
-    [equipment]
-  );
+  const calculatedEquipment = useMemo(() => {
+    try {
+      return calculateTiming(equipment);
+    } catch (err) {
+      console.error("Error in calculateTiming:", err);
+      toast({
+        title: "Scheduling Failed",
+        description:
+          err instanceof Error
+            ? err.message
+            : "An error occurred when determining the schedule",
+        variant: "destructive",
+      });
+      return equipment; // Return original equipment as fallback
+    }
+  }, [equipment]);
 
   // Move this to a useEffect if you want to log after each render
   useEffect(() => {
