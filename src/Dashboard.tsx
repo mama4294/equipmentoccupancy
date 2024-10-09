@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import Header from "./Header";
 import EquipmentOccupancyChart from "./EquipmentOccupancyChart";
 import { useStore } from "./Store";
 import { calculateTiming } from "./utils/ganttLogic";
-import { AlertTriangleIcon } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "./hooks/use-toast";
 
 function Dashboard() {

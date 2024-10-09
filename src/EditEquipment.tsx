@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "./components/ui/table";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, PlusCircle } from "lucide-react";
 import { Input } from "./components/ui/input";
 import { useStore } from "./Store";
 
@@ -60,9 +60,9 @@ const EditProcedure = ({
   const initialOperation: Operation = {
     id: uuidv4(),
     name: "",
-    duration: 0,
+    duration: 1,
     durationUnit: "hr",
-    predecessorId: "", // Change this from predecessor object to string
+    predecessorId: "",
     predecessorRelation: "finish-to-start",
     offset: 0,
     offsetUnit: "hr",
@@ -137,13 +137,15 @@ const EditProcedure = ({
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
         <Button
-          variant="outline"
+          // variant="outline"
+          className="w-full"
           onClick={() => {
             setEquipmentToEdit(null);
             setEquipment(initialEquipment);
           }}
         >
-          New Eequipment
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Add Equipment
         </Button>
       </DrawerTrigger>
       <DrawerContent className="h-[80vh]">
@@ -162,7 +164,7 @@ const EditProcedure = ({
               <Label htmlFor="title">Equipment Name</Label>
               <Input
                 id="title"
-                placeholder="Fermentation"
+                placeholder="Fermenter 3A"
                 value={equipment.name}
                 onChange={(e) =>
                   setEquipment((prev) => ({ ...prev, name: e.target.value }))
@@ -251,16 +253,36 @@ const EditProcedure = ({
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="initial">Initial</SelectItem>
-                            {equipmentList.flatMap((eq) =>
-                              eq.operations.map((op) => (
-                                <SelectItem key={op.id} value={op.id}>
-                                  {`${eq.name} - ${
-                                    op.name ||
-                                    `Operation ${eq.operations.indexOf(op) + 1}`
-                                  }`}
-                                </SelectItem>
-                              ))
-                            )}
+                            {[...equipmentList, equipment]
+                              .flatMap((eq) =>
+                                eq.operations.map((op, opIndex) => {
+                                  // Skip the current operation
+                                  if (op.id === operation.id) return null;
+
+                                  const optionText = `${
+                                    eq.name || "Current"
+                                  } - ${op.name || `Operation ${opIndex + 1}`}`;
+
+                                  // Use a unique key combining equipment and operation IDs
+                                  const key = `${eq.id}-${op.id}`;
+
+                                  return (
+                                    <SelectItem key={key} value={op.id}>
+                                      {optionText}
+                                    </SelectItem>
+                                  );
+                                })
+                              )
+                              .filter(
+                                (item, index, self) =>
+                                  // Filter out null items and remove duplicates
+                                  item !== null &&
+                                  index ===
+                                    self.findIndex(
+                                      (t) =>
+                                        t && t.props.value === item.props.value
+                                    )
+                              )}
                           </SelectContent>
                         </Select>
                       </TableCell>
