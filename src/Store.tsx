@@ -23,6 +23,8 @@ type Action = {
   updateEquipment: (procedure: Equipment) => void;
   deleteEquipment: (procedure: Equipment) => void;
   duplicateEquipment: (procedure: Equipment) => void;
+  moveEquipmentUp: (equipmentId: string) => void;
+  moveEquipmentDown: (equipmentId: string) => void;
 };
 
 export const useStore = create<State & Action>()(
@@ -71,6 +73,36 @@ export const useStore = create<State & Action>()(
         set((state) => ({
           equipment: [...state.equipment, { ...equipment }],
         })),
+      moveEquipmentUp: (equipmentId: string) =>
+        set((state) => {
+          const equipmentIndex = state.equipment.findIndex(
+            (e) => e.id === equipmentId
+          );
+          if (equipmentIndex > 0) {
+            const newEquipment = [...state.equipment];
+            [newEquipment[equipmentIndex - 1], newEquipment[equipmentIndex]] = [
+              newEquipment[equipmentIndex],
+              newEquipment[equipmentIndex - 1],
+            ];
+            return { equipment: newEquipment };
+          }
+          return state;
+        }),
+      moveEquipmentDown: (equipmentId: string) =>
+        set((state) => {
+          const equipmentIndex = state.equipment.findIndex(
+            (e) => e.id === equipmentId
+          );
+          if (equipmentIndex < state.equipment.length - 1) {
+            const newEquipment = [...state.equipment];
+            [newEquipment[equipmentIndex], newEquipment[equipmentIndex + 1]] = [
+              newEquipment[equipmentIndex + 1],
+              newEquipment[equipmentIndex],
+            ];
+            return { equipment: newEquipment };
+          }
+          return state;
+        }),
     }),
     {
       name: "equipment-occupancy-data", // (must be unique)

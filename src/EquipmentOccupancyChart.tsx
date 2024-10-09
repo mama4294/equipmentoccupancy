@@ -87,8 +87,10 @@ const EquipmentRow: React.FC<{
   >;
 }> = ({ equipment, maxDuration, setIsDrawerOpen, setSelectedEquipment }) => {
   const {
-    deleteEquipment: deleteProcedure,
-    duplicateEquipment: duplicateProcedure,
+    deleteEquipment,
+    duplicateEquipment,
+    moveEquipmentUp,
+    moveEquipmentDown,
   } = useStore();
 
   return (
@@ -111,19 +113,19 @@ const EquipmentRow: React.FC<{
               <Edit className="mr-2 h-4 w-4" />
               <span>Edit</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => deleteProcedure(equipment)}>
+            <DropdownMenuItem onClick={() => deleteEquipment(equipment)}>
               <Trash className="mr-2 h-4 w-4" />
               <span>Delete</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => duplicateProcedure(equipment)}>
+            <DropdownMenuItem onClick={() => duplicateEquipment(equipment)}>
               <Copy className="mr-2 h-4 w-4" />
               <span>Duplicate</span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => moveEquipmentUp(equipment.id)}>
               <ChevronUp className="mr-2 h-4 w-4" />
               <span>Move Up</span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => moveEquipmentDown(equipment.id)}>
               <ChevronDown className="mr-2 h-4 w-4" />
               <span>Move Down</span>
             </DropdownMenuItem>
