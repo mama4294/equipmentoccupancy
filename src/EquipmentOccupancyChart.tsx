@@ -54,7 +54,7 @@ export default function EOChart({
         <CardDescription>Process Schedule</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="h-[400px] relative">
+        <div className="relative">
           {calculatedEquipment.map((equipment) => (
             <EquipmentRow
               key={equipment.id}
