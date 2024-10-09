@@ -51,7 +51,11 @@ const EditProcedure = ({
   isOpen,
   setIsOpen,
 }: Props) => {
-  const { addEquipment, updateEquipment } = useStore();
+  const {
+    addEquipment,
+    updateEquipment,
+    equipment: equipmentList,
+  } = useStore();
 
   const initialOperation: Operation = {
     id: uuidv4(),
@@ -246,17 +250,17 @@ const EditProcedure = ({
                             <SelectValue placeholder="Select predecessor" />
                           </SelectTrigger>
                           <SelectContent>
-                            {index === 0 && (
-                              <SelectItem value="initial">Initial</SelectItem>
-                            )}
-                            {equipment.operations.slice(0, index).map((op) => (
-                              <SelectItem key={op.id} value={op.id}>
-                                {op.name ||
-                                  `Operation ${
-                                    equipment.operations.indexOf(op) + 1
+                            <SelectItem value="initial">Initial</SelectItem>
+                            {equipmentList.flatMap((eq) =>
+                              eq.operations.map((op) => (
+                                <SelectItem key={op.id} value={op.id}>
+                                  {`${eq.name} - ${
+                                    op.name ||
+                                    `Operation ${eq.operations.indexOf(op) + 1}`
                                   }`}
-                              </SelectItem>
-                            ))}
+                                </SelectItem>
+                              ))
+                            )}
                           </SelectContent>
                         </Select>
                       </TableCell>
