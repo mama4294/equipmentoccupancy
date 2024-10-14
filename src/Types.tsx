@@ -1,8 +1,17 @@
 export type State = {
   projectTitle: string;
   equipment: Equipment[];
-  // batches: Batch[];
+  campaign: Campaign;
   // resourceOptions: ResourceOption[];
+};
+
+export type CampaignSchedulingType = "optimized" | "fixed";
+
+export type Campaign = {
+  quantity: number;
+  schedulingType: CampaignSchedulingType;
+  frequency: number;
+  frequencyUnit: DurationUnit;
 };
 
 type Resource = {

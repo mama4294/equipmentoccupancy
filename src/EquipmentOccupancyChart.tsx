@@ -31,6 +31,7 @@ import {
 import { Button } from "./components/ui/button";
 import { useStore } from "./Store";
 import EditProcedure from "./EditEquipment";
+import CampaignDialog from "./components/CampaignDialog";
 
 export default function EOChart({
   calculatedEquipment,
@@ -73,6 +74,7 @@ export default function EOChart({
           isOpen={isDrawerOpen}
           setIsOpen={setIsDrawerOpen}
         />
+        <CampaignDialog />
       </CardFooter>
     </Card>
   );

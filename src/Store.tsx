@@ -1,17 +1,31 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { saveToFile, openFile } from "./utils/FileSystem";
-import { Equipment, State } from "./Types";
+import {
+  CampaignSchedulingType,
+  DurationUnit,
+  Equipment,
+  State,
+} from "./Types";
 import { v4 as uuidv4 } from "uuid";
+import {
+  MAX_BATCHES_PER_CAMPAIGN,
+  MIN_BATCHES_PER_CAMPAIGN,
+} from "./utils/constants";
 
 //Procedure: Fermentation
 //Operation: Mixing
 //Equipment: V-3200
 
-// define the initial state
 const initialState: State = {
   projectTitle: "Untitled Project",
   equipment: [],
+  campaign: {
+    quantity: 1,
+    schedulingType: "optimized",
+    frequency: 7,
+    frequencyUnit: "day",
+  },
 };
 
 type Action = {
@@ -26,6 +40,12 @@ type Action = {
   duplicateEquipment: (procedure: Equipment) => void;
   moveEquipmentUp: (equipmentId: string) => void;
   moveEquipmentDown: (equipmentId: string) => void;
+  updateCampaignQuantity: (quantity: number) => void;
+  updateCampaignSchedulingType: (
+    schedulingType: CampaignSchedulingType
+  ) => void;
+  updateCampaignFrequency: (frequency: number) => void;
+  updateCampaignFrequencyUnit: (frequencyUnit: DurationUnit) => void;
 };
 
 export const useStore = create<State & Action>()(
@@ -84,6 +104,21 @@ export const useStore = create<State & Action>()(
             },
           ],
         })),
+      updateCampaignQuantity: (quantity: number) =>
+        set((state) => ({
+          campaign: {
+            ...state.campaign,
+            quantity: Math.max(
+              MIN_BATCHES_PER_CAMPAIGN,
+              Math.min(quantity, MAX_BATCHES_PER_CAMPAIGN)
+            ),
+          },
+        })),
+      updateCampaignSchedulingType: (schedulingType: CampaignSchedulingType) =>
+        set((state) => ({
+          campaign: { ...state.campaign, schedulingType },
+        })),
+
       moveEquipmentUp: (equipmentId: string) =>
         set((state) => {
           const equipmentIndex = state.equipment.findIndex(
@@ -114,6 +149,14 @@ export const useStore = create<State & Action>()(
           }
           return state;
         }),
+      updateCampaignFrequency: (frequency: number) =>
+        set((state) => ({
+          campaign: { ...state.campaign, frequency },
+        })),
+      updateCampaignFrequencyUnit: (frequencyUnit: DurationUnit) =>
+        set((state) => ({
+          campaign: { ...state.campaign, frequencyUnit },
+        })),
     }),
     {
       name: "equipment-occupancy-data", // (must be unique)
