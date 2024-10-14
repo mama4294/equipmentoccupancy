@@ -1,9 +1,9 @@
 import { useEffect, useMemo } from "react";
 import Header from "./Header";
 import EquipmentOccupancyChart from "./EquipmentOccupancyChart";
-import { useStore } from "./Store";
-import { calculateTiming } from "./utils/ganttLogic";
-import { useToast } from "./hooks/use-toast";
+import { useStore } from "../Store";
+import { calculateTiming } from "../utils/ganttLogic";
+import { useToast } from "../hooks/use-toast";
 
 function Dashboard() {
   const { equipment } = useStore();

@@ -1,15 +1,15 @@
 import React from "react";
-import { Button } from "./components/ui/button";
+import { Button } from "./ui/button";
 import { FilePlus, FolderOpen, Menu, Save } from "lucide-react";
-import { Input } from "./components/ui/input";
-import { useToast } from "./hooks/use-toast";
+import { Input } from "./ui/input";
+import { useToast } from "../hooks/use-toast";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useStore } from "./Store";
+import { useStore } from "../Store";
 
 function Header() {
   const { toast } = useToast();

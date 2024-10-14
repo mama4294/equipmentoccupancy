@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Operation, Equipment } from "./Types";
+import { Operation, Equipment } from "../Types";
 import {
   MoreVertical,
   Edit,
@@ -13,7 +13,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./components/ui/dropdown-menu";
+} from "./ui/dropdown-menu";
 import {
   Card,
   CardContent,
@@ -21,17 +21,17 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./components/ui/card";
+} from "./ui/card";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./components/ui/tooltip";
-import { Button } from "./components/ui/button";
-import { useStore } from "./Store";
+} from "./ui/tooltip";
+import { Button } from "./ui/button";
+import { useStore } from "../Store";
 import EditProcedure from "./EditEquipment";
-import CampaignDialog from "./components/CampaignDialog";
+import CampaignDialog from "./CampaignDialog";
 
 export default function EOChart({
   calculatedEquipment,

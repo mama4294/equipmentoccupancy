@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Button } from "./components/ui/button";
-import { Label } from "./components/ui/label";
+import { Button } from "./ui/button";
+import { Label } from "./ui/label";
 import {
   Drawer,
   DrawerClose,
@@ -11,7 +11,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "./components/ui/drawer";
+} from "./ui/drawer";
 import {
   Table,
   TableBody,
@@ -19,24 +19,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./components/ui/table";
+} from "./ui/table";
 import { Plus, Minus, PlusCircle } from "lucide-react";
-import { Input } from "./components/ui/input";
-import { useStore } from "./Store";
+import { Input } from "./ui/input";
+import { useStore } from "../Store";
 
 import {
   DurationUnit,
   Operation,
   predecessorRelation,
   Equipment,
-} from "./Types";
+} from "../Types";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./components/ui/select";
+} from "./ui/select";
 
 type Props = {
   equipmentToEdit?: Equipment | null;
