@@ -67,9 +67,6 @@ const EditProcedure = ({
     offset: 0,
     offsetUnit: "hr",
     resources: [],
-    // start: 0,
-    // end: 0,
-    parentId: "",
   };
 
   const initialEquipment: Equipment = {

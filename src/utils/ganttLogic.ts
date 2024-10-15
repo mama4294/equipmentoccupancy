@@ -21,13 +21,14 @@ export const calculateTiming = (
       ...operation,
       start: 0,
       end: 0,
+      batchNumber: 1,
     })),
   }));
 
   // Create a map to store all operations with initial start and end times
   const operationsMap = new Map<
     string,
-    Operation & { start: number; end: number }
+    Operation & { start: number; end: number; batchNumber: number }
   >();
 
   // Populate the map with all operations from all equipment
@@ -39,7 +40,7 @@ export const calculateTiming = (
 
   // Recursive function to calculate timing for a single operation
   const calculateOperationTiming = (
-    operation: Operation & { start: number; end: number }
+    operation: Operation & { start: number; end: number; batchNumber: number }
   ): void => {
     // If timing is already calculated, return
     if (operation.start !== 0 && operation.end !== 0) return;
@@ -87,7 +88,12 @@ export const calculateTiming = (
     }
 
     // Update the operation in the map with a new object
-    operationsMap.set(operation.id, { ...operation, start, end });
+    operationsMap.set(operation.id, {
+      ...operation,
+      start,
+      end,
+      batchNumber: 1,
+    });
   };
 
   // Calculate timing for all operations in all equipment
@@ -139,6 +145,7 @@ export const calculateTiming = (
           id: `${op.id}-batch${batchIndex + 1}`,
           start: op.start + batchOffset,
           end: op.end + batchOffset,
+          batchNumber: batchIndex + 1,
         })
       );
 

@@ -41,7 +41,6 @@ export interface Operation {
   offset: number;
   offsetUnit: DurationUnit;
   resources: Resource[];
-  parentId: string;
 }
 
 export type Equipment = {
@@ -53,6 +52,7 @@ export type Equipment = {
 export type OperationWithTiming = Operation & {
   start: number;
   end: number;
+  batchNumber: number;
 };
 
 export type EquipmentWithTiming = {

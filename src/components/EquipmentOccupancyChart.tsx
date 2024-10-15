@@ -1,10 +1,5 @@
 import React, { useMemo, useState } from "react";
-import {
-  Operation,
-  Equipment,
-  EquipmentWithTiming,
-  OperationWithTiming,
-} from "../Types";
+import { Equipment, EquipmentWithTiming, OperationWithTiming } from "../Types";
 import {
   MoreVertical,
   Edit,
@@ -37,16 +32,18 @@ import { Button } from "./ui/button";
 import { useStore } from "../Store";
 import EditProcedure from "./EditEquipment";
 import CampaignDialog from "./CampaignDialog";
+import { cn } from "@/lib/utils";
 
 export default function EOChart({
   equipmentWithTiming,
 }: {
   equipmentWithTiming: EquipmentWithTiming[];
 }) {
-  const { equipment } = useStore();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // New state for the drawer
   const [selectedEquipment, setSelectedEquipment] =
     useState<Equipment | null>();
+
+  console.log("equipmentWithTiming: ", equipmentWithTiming);
 
   const maxDuration = useMemo(() => {
     return Math.max(
@@ -191,12 +188,28 @@ const OperationBar: React.FC<{
   const widthPercentage =
     ((operation.end - operation.start) / maxDuration) * 100;
 
+  const operationColor = (() => {
+    switch (operation.batchNumber) {
+      case 1:
+        return "bg-blue-500";
+      case 2:
+        return "bg-blue-400";
+      case 3:
+        return "bg-blue-300";
+      default:
+        return "bg-gray-500";
+    }
+  })();
+
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           <div
-            className="absolute h-6 rounded-md bg-primary cursor-pointer"
+            className={cn(
+              "absolute h-6 rounded-md bg-primary cursor-pointer",
+              operationColor
+            )}
             style={{
               left: `${startPercentage}%`,
               width: `${widthPercentage}%`,
@@ -208,6 +221,7 @@ const OperationBar: React.FC<{
           <p>
             Duration: {operation.duration} {operation.durationUnit}
           </p>
+          <p>Batch {operation.batchNumber}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
