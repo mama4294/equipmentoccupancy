@@ -4,14 +4,15 @@ import EquipmentOccupancyChart from "./EquipmentOccupancyChart";
 import { useStore } from "../Store";
 import { calculateTiming } from "../utils/ganttLogic";
 import { useToast } from "../hooks/use-toast";
+import { EquipmentWithTiming } from "@/Types";
 
 function Dashboard() {
-  const { equipment } = useStore();
+  const { equipment, campaign } = useStore();
   const { toast } = useToast();
 
-  const calculatedEquipment = useMemo(() => {
+  const calculatedEquipment = useMemo<EquipmentWithTiming[]>(() => {
     try {
-      return calculateTiming(equipment);
+      return calculateTiming(equipment, campaign) as EquipmentWithTiming[];
     } catch (err) {
       console.error("Error in calculateTiming:", err);
       toast({
@@ -22,7 +23,7 @@ function Dashboard() {
             : "An error occurred when determining the schedule",
         variant: "destructive",
       });
-      return equipment; // Return original equipment as fallback
+      return equipment as EquipmentWithTiming[];
     }
   }, [equipment]);
 
@@ -42,7 +43,7 @@ function Dashboard() {
           >
             <div className="w-full">
               <EquipmentOccupancyChart
-                calculatedEquipment={calculatedEquipment}
+                equipmentWithTiming={calculatedEquipment}
               />
             </div>
           </div>

@@ -1,5 +1,10 @@
 import React, { useMemo, useState } from "react";
-import { Operation, Equipment } from "../Types";
+import {
+  Operation,
+  Equipment,
+  EquipmentWithTiming,
+  OperationWithTiming,
+} from "../Types";
 import {
   MoreVertical,
   Edit,
@@ -34,19 +39,20 @@ import EditProcedure from "./EditEquipment";
 import CampaignDialog from "./CampaignDialog";
 
 export default function EOChart({
-  calculatedEquipment,
+  equipmentWithTiming,
 }: {
-  calculatedEquipment: Equipment[];
+  equipmentWithTiming: EquipmentWithTiming[];
 }) {
+  const { equipment } = useStore();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // New state for the drawer
   const [selectedEquipment, setSelectedEquipment] =
     useState<Equipment | null>();
 
   const maxDuration = useMemo(() => {
     return Math.max(
-      ...calculatedEquipment.flatMap((p) => p.operations.map((op) => op.end))
+      ...equipmentWithTiming.flatMap((p) => p.operations.map((op) => op.end))
     );
-  }, [calculatedEquipment]);
+  }, [equipmentWithTiming]);
 
   return (
     <Card className="w-full">
@@ -56,10 +62,10 @@ export default function EOChart({
       </CardHeader>
       <CardContent>
         <div className="relative">
-          {calculatedEquipment.map((equipment) => (
+          {equipmentWithTiming.map((equipment) => (
             <EquipmentRow
               key={equipment.id}
-              equipment={equipment}
+              equipmentWithTiming={equipment}
               maxDuration={maxDuration}
               setSelectedEquipment={setSelectedEquipment}
               setIsDrawerOpen={setIsDrawerOpen}
@@ -81,24 +87,38 @@ export default function EOChart({
 }
 
 const EquipmentRow: React.FC<{
-  equipment: Equipment;
+  equipmentWithTiming: EquipmentWithTiming;
   maxDuration: number;
   setIsDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedEquipment: React.Dispatch<
     React.SetStateAction<Equipment | null | undefined>
   >;
-}> = ({ equipment, maxDuration, setIsDrawerOpen, setSelectedEquipment }) => {
+}> = ({
+  equipmentWithTiming,
+  maxDuration,
+  setIsDrawerOpen,
+  setSelectedEquipment,
+}) => {
   const {
     deleteEquipment,
     duplicateEquipment,
     moveEquipmentUp,
     moveEquipmentDown,
+    equipment,
   } = useStore();
+
+  const equipmentWithoutTiming = equipment.find(
+    (eq: Equipment) => eq.id === equipmentWithTiming.id
+  );
+
+  if (!equipmentWithoutTiming) {
+    return null;
+  }
 
   return (
     <div className="relative h-8 mb-2">
       <div className="absolute left-0 w-32 pr-2 text-sm font-medium text-right flex items-center justify-end h-full">
-        {equipment.name}
+        {equipmentWithoutTiming.name}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="h-8 w-8 p-0 ml-2">
@@ -108,26 +128,34 @@ const EquipmentRow: React.FC<{
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               onClick={() => {
-                setSelectedEquipment(equipment);
+                setSelectedEquipment(equipmentWithoutTiming);
                 setIsDrawerOpen(true);
               }}
             >
               <Edit className="mr-2 h-4 w-4" />
               <span>Edit</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => deleteEquipment(equipment)}>
+            <DropdownMenuItem
+              onClick={() => deleteEquipment(equipmentWithoutTiming)}
+            >
               <Trash className="mr-2 h-4 w-4" />
               <span>Delete</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => duplicateEquipment(equipment)}>
+            <DropdownMenuItem
+              onClick={() => duplicateEquipment(equipmentWithoutTiming)}
+            >
               <Copy className="mr-2 h-4 w-4" />
               <span>Duplicate</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => moveEquipmentUp(equipment.id)}>
+            <DropdownMenuItem
+              onClick={() => moveEquipmentUp(equipmentWithoutTiming.id)}
+            >
               <ChevronUp className="mr-2 h-4 w-4" />
               <span>Move Up</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => moveEquipmentDown(equipment.id)}>
+            <DropdownMenuItem
+              onClick={() => moveEquipmentDown(equipmentWithoutTiming.id)}
+            >
               <ChevronDown className="mr-2 h-4 w-4" />
               <span>Move Down</span>
             </DropdownMenuItem>
@@ -137,24 +165,26 @@ const EquipmentRow: React.FC<{
       <div
         className="absolute left-32 right-0 h-full bg-secondary"
         onClick={() => {
-          setSelectedEquipment(equipment);
+          setSelectedEquipment(equipmentWithoutTiming);
           setIsDrawerOpen(true);
         }}
       >
-        {equipment.operations.map((operation) => (
-          <OperationBar
-            key={operation.id}
-            operation={operation}
-            maxDuration={maxDuration}
-          />
-        ))}
+        {equipmentWithTiming.operations.map(
+          (operation: OperationWithTiming) => (
+            <OperationBar
+              key={operation.id}
+              operation={operation}
+              maxDuration={maxDuration}
+            />
+          )
+        )}
       </div>
     </div>
   );
 };
 
 const OperationBar: React.FC<{
-  operation: Operation;
+  operation: OperationWithTiming;
   maxDuration: number;
 }> = ({ operation, maxDuration }) => {
   const startPercentage = (operation.start / maxDuration) * 100;

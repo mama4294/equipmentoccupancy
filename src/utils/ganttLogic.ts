@@ -1,26 +1,46 @@
-import { DurationUnit, Operation, Equipment } from "../Types";
+import {
+  DurationUnit,
+  Operation,
+  Equipment,
+  Campaign,
+  EquipmentWithTiming,
+} from "../Types";
 
-export const calculateTiming = (equipment: Equipment[]): Equipment[] => {
-  // Create a deep copy of the equipment array
-  const equipmentCopy = JSON.parse(JSON.stringify(equipment));
+export const calculateTiming = (
+  equipment: Equipment[],
+  campaign: Campaign
+): EquipmentWithTiming[] => {
+  /////// FIRST CALCULATE TIMING FOR A SINGLE BATCH//////
 
-  // Create a map to store all operations with initial start and end times
-  const operationsMap = new Map<string, Operation>();
-
-  // Populate the map with all operations from all equipment and initialize start and end times to 0
-  equipmentCopy.forEach((eq: Equipment) => {
-    eq.operations = eq.operations.map((operation: Operation) => ({
+  // Create a deep copy of the equipment array and add start and end to each operation
+  let singleBatch: EquipmentWithTiming[] = JSON.parse(
+    JSON.stringify(equipment)
+  ).map((eq: Equipment) => ({
+    ...eq,
+    operations: eq.operations.map((operation: Operation) => ({
       ...operation,
       start: 0,
       end: 0,
-    }));
-    eq.operations.forEach((operation: Operation) => {
+    })),
+  }));
+
+  // Create a map to store all operations with initial start and end times
+  const operationsMap = new Map<
+    string,
+    Operation & { start: number; end: number }
+  >();
+
+  // Populate the map with all operations from all equipment
+  singleBatch.forEach((eq: EquipmentWithTiming) => {
+    eq.operations.forEach((operation) => {
       operationsMap.set(operation.id, operation);
     });
   });
 
   // Recursive function to calculate timing for a single operation
-  const calculateOperationTiming = (operation: Operation): void => {
+  const calculateOperationTiming = (
+    operation: Operation & { start: number; end: number }
+  ): void => {
     // If timing is already calculated, return
     if (operation.start !== 0 && operation.end !== 0) return;
 
@@ -71,15 +91,50 @@ export const calculateTiming = (equipment: Equipment[]): Equipment[] => {
   };
 
   // Calculate timing for all operations in all equipment
-  equipmentCopy.forEach((eq: Equipment) => {
+  singleBatch.forEach((eq: EquipmentWithTiming) => {
     eq.operations.forEach(calculateOperationTiming);
   });
 
   // Return updated equipment with calculated timings
-  return equipmentCopy.map((eq: Equipment) => ({
+  singleBatch = singleBatch.map((eq: EquipmentWithTiming) => ({
     ...eq,
-    operations: eq.operations.map((op: Operation) => operationsMap.get(op.id)!),
+    operations: eq.operations.map(
+      (op: Operation & { start: number; end: number }) =>
+        operationsMap.get(op.id)!
+    ),
   }));
+
+  /////// THEN CALCULATE TIMING FOR MULTIPLE BATCHES IN CAMPAIGN//////
+
+  let multipleBatches = JSON.parse(JSON.stringify(singleBatch));
+
+  // Loop through each equipment
+  for (let i = 0; i < multipleBatches.length; i++) {
+    let newOperations = [...multipleBatches[i].operations];
+
+    // Add copies of each operation to the equipment for each additional batch with a batch offset
+    for (let batchIndex = 1; batchIndex < campaign.quantity; batchIndex++) {
+      const batchOffset =
+        batchIndex *
+        convertToSeconds(campaign.frequency, campaign.frequencyUnit);
+
+      const batchOperations = multipleBatches[i].operations.map(
+        (op: Operation & { start: number; end: number }) => ({
+          ...op,
+          id: `${op.id}-batch${batchIndex + 1}`,
+          start: op.start + batchOffset,
+          end: op.end + batchOffset,
+        })
+      );
+
+      newOperations.push(...batchOperations);
+    }
+
+    // Replace the operations array with the new extended array
+    multipleBatches[i].operations = newOperations;
+  }
+
+  return multipleBatches;
 };
 
 const convertToSeconds = (value: number, unit: DurationUnit): number => {

@@ -25,7 +25,7 @@ type Resource = {
 
 export type DurationUnit = "day" | "hr" | "min" | "sec";
 
-export type predecessorRelation =
+export type PredecessorRelation =
   | "finish-to-start"
   | "start-to-start"
   | "finish-to-finish"
@@ -37,12 +37,10 @@ export interface Operation {
   duration: number;
   durationUnit: DurationUnit;
   predecessorId: string;
-  predecessorRelation: predecessorRelation;
+  predecessorRelation: PredecessorRelation;
   offset: number;
   offsetUnit: DurationUnit;
   resources: Resource[];
-  start: number;
-  end: number;
   parentId: string;
 }
 
@@ -50,4 +48,15 @@ export type Equipment = {
   id: string;
   name: string;
   operations: Operation[];
+};
+
+export type OperationWithTiming = Operation & {
+  start: number;
+  end: number;
+};
+
+export type EquipmentWithTiming = {
+  id: string;
+  name: string;
+  operations: OperationWithTiming[];
 };

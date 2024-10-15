@@ -27,7 +27,7 @@ import { useStore } from "../Store";
 import {
   DurationUnit,
   Operation,
-  predecessorRelation,
+  PredecessorRelation,
   Equipment,
 } from "../Types";
 import {
@@ -67,8 +67,8 @@ const EditProcedure = ({
     offset: 0,
     offsetUnit: "hr",
     resources: [],
-    start: 0,
-    end: 0,
+    // start: 0,
+    // end: 0,
     parentId: "",
   };
 
@@ -289,7 +289,7 @@ const EditProcedure = ({
                       <TableCell className="p-2">
                         <Select
                           value={operation.predecessorRelation}
-                          onValueChange={(value: predecessorRelation) =>
+                          onValueChange={(value: PredecessorRelation) =>
                             handleOperationChange(
                               operation.id,
                               "predecessorRelation",
