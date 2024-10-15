@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useStore } from "../Store";
+import ThemeToggle from "./ThemeToggle";
 
 function Header() {
   const { toast } = useToast();
@@ -81,6 +82,7 @@ function Header() {
         }
       />
 
+      <ThemeToggle />
       <Button
         variant="outline"
         size="sm"
