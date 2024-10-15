@@ -58,5 +58,6 @@ export type OperationWithTiming = Operation & {
 export type EquipmentWithTiming = {
   id: string;
   name: string;
+  duration: number; //seconds
   operations: OperationWithTiming[];
 };

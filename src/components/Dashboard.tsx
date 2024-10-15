@@ -25,12 +25,12 @@ function Dashboard() {
       });
       return equipment as EquipmentWithTiming[];
     }
-  }, [equipment]);
+  }, [equipment, campaign]);
 
   // Move this to a useEffect if you want to log after each render
-  useEffect(() => {
-    console.table(equipment.flatMap((p) => p.operations));
-  }, [equipment]);
+  // useEffect(() => {
+  //   console.table(calculatedEquipment.flatMap((p) => p.operations));
+  // }, [calculatedEquipment]);
 
   return (
     <div className="h-screen w-screen ">

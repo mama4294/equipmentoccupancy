@@ -96,17 +96,34 @@ export const calculateTiming = (
   });
 
   // Return updated equipment with calculated timings
-  singleBatch = singleBatch.map((eq: EquipmentWithTiming) => ({
-    ...eq,
-    operations: eq.operations.map(
-      (op: Operation & { start: number; end: number }) =>
-        operationsMap.get(op.id)!
-    ),
-  }));
+  singleBatch = singleBatch.map((eq: EquipmentWithTiming) => {
+    let minStartTime = Infinity;
+    let maxEndTime = -Infinity;
+
+    eq.operations = eq.operations.map((op) => {
+      const updatedOp = operationsMap.get(op.id)!;
+      minStartTime = Math.min(minStartTime, updatedOp.start);
+      maxEndTime = Math.max(maxEndTime, updatedOp.end);
+      return updatedOp;
+    });
+
+    eq.duration = maxEndTime - minStartTime;
+    return eq;
+  });
+
+  const maxEquipmentDuration = singleBatch.reduce(
+    (max: number, eq: EquipmentWithTiming) => Math.max(max, eq.duration),
+    0
+  );
 
   /////// THEN CALCULATE TIMING FOR MULTIPLE BATCHES IN CAMPAIGN//////
 
   let multipleBatches = JSON.parse(JSON.stringify(singleBatch));
+
+  let offset = maxEquipmentDuration;
+  if (campaign.schedulingType === "fixed") {
+    offset = convertToSeconds(campaign.frequency, campaign.frequencyUnit);
+  }
 
   // Loop through each equipment
   for (let i = 0; i < multipleBatches.length; i++) {
@@ -114,9 +131,7 @@ export const calculateTiming = (
 
     // Add copies of each operation to the equipment for each additional batch with a batch offset
     for (let batchIndex = 1; batchIndex < campaign.quantity; batchIndex++) {
-      const batchOffset =
-        batchIndex *
-        convertToSeconds(campaign.frequency, campaign.frequencyUnit);
+      const batchOffset = batchIndex * offset;
 
       const batchOperations = multipleBatches[i].operations.map(
         (op: Operation & { start: number; end: number }) => ({
