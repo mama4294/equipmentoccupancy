@@ -61,3 +61,9 @@ export type EquipmentWithTiming = {
   duration: number; //seconds
   operations: OperationWithTiming[];
 };
+
+export type ProcessDetails = {
+  bottleneck: EquipmentWithTiming;
+  batchDuration: number; //seconds
+  campaignDuration: number; //seconds
+};

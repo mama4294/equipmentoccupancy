@@ -2,9 +2,10 @@ import { useEffect, useMemo } from "react";
 import Header from "./Header";
 import EquipmentOccupancyChart from "./EquipmentOccupancyChart";
 import { useStore } from "../Store";
-import { calculateTiming } from "../utils/ganttLogic";
+import { calculateProcessDetails, calculateTiming } from "../utils/ganttLogic";
 import { useToast } from "../hooks/use-toast";
 import { EquipmentWithTiming } from "@/Types";
+import BottleneckCard from "./BottleneckCard";
 
 function Dashboard() {
   const { equipment, campaign } = useStore();
@@ -27,6 +28,11 @@ function Dashboard() {
     }
   }, [equipment, campaign]);
 
+  const processDetails = calculateProcessDetails(calculatedEquipment);
+
+  console.log("process deatils");
+  console.table(processDetails);
+
   // useEffect(() => {
   //   console.table(calculatedEquipment.flatMap((p) => p.operations));
   // }, [calculatedEquipment]);
@@ -40,10 +46,12 @@ function Dashboard() {
             className="relative hidden flex-col items-start gap-8 md:flex"
             x-chunk="dashboard-03-chunk-0"
           >
-            <div className="w-full">
+            <div className="w-full grid grid-cols-4 gap-4">
               <EquipmentOccupancyChart
                 equipmentWithTiming={calculatedEquipment}
               />
+              <BottleneckCard details={processDetails} />
+              {/* <div className="col-span-2" /> Empty space */}
             </div>
           </div>
         </main>

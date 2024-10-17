@@ -52,7 +52,7 @@ export default function EOChart({
   }, [equipmentWithTiming]);
 
   return (
-    <Card className="w-full">
+    <Card className="w-full col-span-4">
       <CardHeader>
         <CardTitle>Equipment Occupancy Chart</CardTitle>
         <CardDescription>Process Schedule</CardDescription>

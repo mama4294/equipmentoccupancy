@@ -4,6 +4,7 @@ import {
   Equipment,
   Campaign,
   EquipmentWithTiming,
+  ProcessDetails,
 } from "../Types";
 
 export const calculateTiming = (
@@ -170,4 +171,55 @@ const convertToSeconds = (value: number, unit: DurationUnit): number => {
     case "sec":
       return value;
   }
+};
+
+export const calculateProcessDetails = (
+  equipment: EquipmentWithTiming[]
+): ProcessDetails => {
+  let bottleneck = equipment[0];
+  for (let i = 1; i < equipment.length; i++) {
+    if (equipment[i].duration > bottleneck.duration) {
+      bottleneck = equipment[i];
+    }
+  }
+
+  const batchDuration = calculateBatchDuration(equipment);
+  const campaignDuration = calculateCampaignDuration(equipment);
+
+  return {
+    bottleneck,
+    batchDuration,
+    campaignDuration,
+  };
+};
+
+const calculateBatchDuration = (equipment: EquipmentWithTiming[]): number => {
+  let minStartTime = Infinity;
+  let maxEndTime = -Infinity;
+
+  equipment.forEach((eq) => {
+    eq.operations.forEach((op) => {
+      if (op.batchNumber === 1) {
+        minStartTime = Math.min(minStartTime, op.start);
+        maxEndTime = Math.max(maxEndTime, op.end);
+      }
+    });
+  });
+
+  return maxEndTime - minStartTime;
+};
+const calculateCampaignDuration = (
+  equipment: EquipmentWithTiming[]
+): number => {
+  let minStartTime = Infinity;
+  let maxEndTime = -Infinity;
+
+  equipment.forEach((eq) => {
+    eq.operations.forEach((op) => {
+      minStartTime = Math.min(minStartTime, op.start);
+      maxEndTime = Math.max(maxEndTime, op.end);
+    });
+  });
+
+  return maxEndTime - minStartTime;
 };
