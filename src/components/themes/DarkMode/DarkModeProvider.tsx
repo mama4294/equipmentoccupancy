@@ -20,10 +20,10 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
-export function ThemeProvider({
+export function DarkModeProvider({
   children,
   defaultTheme = "system",
-  storageKey = "vite-ui-theme",
+  storageKey = "dark-mode-eeo-theme",
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(
@@ -63,7 +63,7 @@ export function ThemeProvider({
   );
 }
 
-export const useTheme = () => {
+export const useDarkModeTheme = () => {
   const context = useContext(ThemeProviderContext);
 
   if (context === undefined)

@@ -27,9 +27,9 @@ function Dashboard() {
     }
   }, [equipment, campaign]);
 
-  useEffect(() => {
-    console.table(calculatedEquipment.flatMap((p) => p.operations));
-  }, [calculatedEquipment]);
+  // useEffect(() => {
+  //   console.table(calculatedEquipment.flatMap((p) => p.operations));
+  // }, [calculatedEquipment]);
 
   return (
     <div className="h-screen w-screen ">

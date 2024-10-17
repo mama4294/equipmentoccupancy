@@ -10,7 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useStore } from "../Store";
-import ThemeToggle from "./ThemeToggle";
+import ThemeToggle from "./themes/DarkMode/ThemeToggle";
+import { ThemeSelector } from "./themes/ColorTheme/ThemeSelector";
 
 function Header() {
   const { toast } = useToast();
@@ -81,7 +82,7 @@ function Header() {
           updateProjectTitle(e.target.value)
         }
       />
-
+      <ThemeSelector />
       <ThemeToggle />
       <Button
         variant="outline"

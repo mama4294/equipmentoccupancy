@@ -191,11 +191,15 @@ const OperationBar: React.FC<{
   const operationColor = (() => {
     switch (operation.batchNumber) {
       case 1:
-        return "bg-blue-500";
+        return "bg-chart-1";
       case 2:
-        return "bg-blue-400";
+        return "bg-chart-2";
       case 3:
-        return "bg-blue-300";
+        return "bg-chart-3";
+      case 4:
+        return "bg-chart-4";
+      case 5:
+        return "bg-chart-5";
       default:
         return "bg-gray-500";
     }
@@ -207,7 +211,7 @@ const OperationBar: React.FC<{
         <TooltipTrigger asChild>
           <div
             className={cn(
-              "absolute h-6 rounded-md bg-primary cursor-pointer",
+              "absolute h-6 rounded-md cursor-pointer",
               operationColor
             )}
             style={{
