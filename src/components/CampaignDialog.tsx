@@ -33,7 +33,7 @@ import {
   MIN_BATCHES_PER_CAMPAIGN,
 } from "@/utils/constants";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { CampaignSchedulingType, DurationUnit } from "@/Types";
+import { CampaignSchedulingType, durationOptions, DurationUnit } from "@/Types";
 
 export default function CampaignDialog() {
   const [isOpen, setIsOpen] = useState(false);
@@ -145,10 +145,13 @@ export default function CampaignDialog() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="day">Day</SelectItem>
-                          <SelectItem value="hr">Hour</SelectItem>
-                          <SelectItem value="min">Minute</SelectItem>
-                          <SelectItem value="sec">Second</SelectItem>
+                          {durationOptions.map((duration) => {
+                            return (
+                              <SelectItem value={duration.value}>
+                                {duration.label}
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                     </div>

@@ -29,6 +29,7 @@ import {
   Operation,
   PredecessorRelation,
   Equipment,
+  durationOptions,
 } from "../Types";
 import {
   Select,
@@ -157,7 +158,7 @@ const EditProcedure = ({
         </DrawerHeader>
         <div className="p-4 pb-0">
           <div className="grid w-full items-center gap-4">
-            <div className="flex flex-col space-y-1.5">
+            <div className="flex flex-col space-y-1.5 mb-12">
               <Label htmlFor="title">Equipment Name</Label>
               <Input
                 id="title"
@@ -198,8 +199,9 @@ const EditProcedure = ({
                         />
                       </TableCell>
                       <TableCell className="p-2">
-                        <div className="flex space-x-2">
+                        <div className="relative flex-grow w-28">
                           <Input
+                            id="duration"
                             type="number"
                             value={operation.duration}
                             onChange={(e) =>
@@ -209,29 +211,34 @@ const EditProcedure = ({
                                 e.target.value
                               )
                             }
-                            placeholder="Duration"
-                            className="w-20"
+                            min={1}
+                            className="pr-16 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
-                          <Select
-                            value={operation.durationUnit}
-                            onValueChange={(value: DurationUnit) =>
-                              handleOperationChange(
-                                operation.id,
-                                "durationUnit",
-                                value
-                              )
-                            }
-                          >
-                            <SelectTrigger className="w-20">
-                              <SelectValue placeholder="Unit" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="day">Day</SelectItem>
-                              <SelectItem value="hr">Hour</SelectItem>
-                              <SelectItem value="min">Minute</SelectItem>
-                              <SelectItem value="sec">Second</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <div className="absolute inset-y-0 right-0 flex items-center">
+                            <Select
+                              value={operation.durationUnit}
+                              onValueChange={(value: DurationUnit) =>
+                                handleOperationChange(
+                                  operation.id,
+                                  "durationUnit",
+                                  value
+                                )
+                              }
+                            >
+                              <SelectTrigger className="border-0 bg-transparent h-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {durationOptions.map((duration) => {
+                                  return (
+                                    <SelectItem value={duration.value}>
+                                      {duration.label}
+                                    </SelectItem>
+                                  );
+                                })}
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell className="p-2">
@@ -245,7 +252,7 @@ const EditProcedure = ({
                             );
                           }}
                         >
-                          <SelectTrigger className="w-[150px] h-8">
+                          <SelectTrigger className="w-[150px]">
                             <SelectValue placeholder="Select predecessor" />
                           </SelectTrigger>
                           <SelectContent>
@@ -313,43 +320,51 @@ const EditProcedure = ({
                           </SelectContent>
                         </Select>
                       </TableCell>
+
                       <TableCell className="p-2">
-                        <div className="flex space-x-2">
+                        <div className="relative flex-grow w-28">
                           <Input
+                            id="offset"
                             type="number"
                             value={operation.offset}
                             onChange={(e) =>
                               handleOperationChange(
                                 operation.id,
                                 "offset",
-                                parseInt(e.target.value)
+                                e.target.value
                               )
                             }
-                            placeholder="Offset"
-                            className="w-20"
+                            min={1}
+                            className="pr-16 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
-                          <Select
-                            value={operation.offsetUnit}
-                            onValueChange={(value: DurationUnit) =>
-                              handleOperationChange(
-                                operation.id,
-                                "offsetUnit",
-                                value
-                              )
-                            }
-                          >
-                            <SelectTrigger className="w-20">
-                              <SelectValue placeholder="Unit" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="day">Day</SelectItem>
-                              <SelectItem value="hr">Hour</SelectItem>
-                              <SelectItem value="min">Minute</SelectItem>
-                              <SelectItem value="sec">Second</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <div className="absolute inset-y-0 right-0 flex items-center">
+                            <Select
+                              value={operation.offsetUnit}
+                              onValueChange={(value: DurationUnit) =>
+                                handleOperationChange(
+                                  operation.id,
+                                  "offsetUnit",
+                                  value
+                                )
+                              }
+                            >
+                              <SelectTrigger className="border-0 bg-transparent h-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {durationOptions.map((duration) => {
+                                  return (
+                                    <SelectItem value={duration.value}>
+                                      {duration.label}
+                                    </SelectItem>
+                                  );
+                                })}
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
                       </TableCell>
+
                       <TableCell className="p-2">
                         <Button
                           variant="outline"

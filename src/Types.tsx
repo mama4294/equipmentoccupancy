@@ -25,6 +25,13 @@ type Resource = {
 
 export type DurationUnit = "day" | "hr" | "min" | "sec";
 
+export const durationOptions: { value: DurationUnit; label: string }[] = [
+  { value: "day", label: "Day" },
+  { value: "hr", label: "Hour" },
+  { value: "min", label: "Min" },
+  { value: "sec", label: "Sec" },
+];
+
 export type PredecessorRelation =
   | "finish-to-start"
   | "start-to-start"
