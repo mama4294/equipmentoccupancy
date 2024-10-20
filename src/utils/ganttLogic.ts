@@ -185,11 +185,13 @@ export const calculateProcessDetails = (
 
   const batchDuration = calculateBatchDuration(equipment);
   const campaignDuration = calculateCampaignDuration(equipment);
+  const batchQty = calculateBatchQuantity(equipment[0]);
 
   return {
     bottleneck,
     batchDuration,
     campaignDuration,
+    batchQty,
   };
 };
 
@@ -208,6 +210,7 @@ const calculateBatchDuration = (equipment: EquipmentWithTiming[]): number => {
 
   return maxEndTime - minStartTime;
 };
+
 const calculateCampaignDuration = (
   equipment: EquipmentWithTiming[]
 ): number => {
@@ -222,4 +225,16 @@ const calculateCampaignDuration = (
   });
 
   return maxEndTime - minStartTime;
+};
+
+const calculateBatchQuantity = (equipment: EquipmentWithTiming): number => {
+  let batchQty = 1;
+
+  equipment.operations.forEach((op) => {
+    if (op.batchNumber > batchQty) {
+      batchQty = op.batchNumber;
+    }
+  });
+
+  return batchQty;
 };

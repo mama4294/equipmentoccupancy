@@ -6,6 +6,8 @@ import { calculateProcessDetails, calculateTiming } from "../utils/ganttLogic";
 import { useToast } from "../hooks/use-toast";
 import { EquipmentWithTiming } from "@/Types";
 import BottleneckCard from "./BottleneckCard";
+import BatchTimeCard from "./BatchTimeCard";
+import CampaignCard from "./CampaingCard";
 
 function Dashboard() {
   const { equipment, campaign } = useStore();
@@ -47,11 +49,12 @@ function Dashboard() {
             x-chunk="dashboard-03-chunk-0"
           >
             <div className="w-full grid grid-cols-4 gap-4">
+              <BatchTimeCard details={processDetails} />
+              <BottleneckCard details={processDetails} />
+              <CampaignCard details={processDetails} />
               <EquipmentOccupancyChart
                 equipmentWithTiming={calculatedEquipment}
               />
-              <BottleneckCard details={processDetails} />
-              {/* <div className="col-span-2" /> Empty space */}
             </div>
           </div>
         </main>

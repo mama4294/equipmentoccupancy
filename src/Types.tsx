@@ -66,4 +66,5 @@ export type ProcessDetails = {
   bottleneck: EquipmentWithTiming;
   batchDuration: number; //seconds
   campaignDuration: number; //seconds
+  batchQty: number;
 };
