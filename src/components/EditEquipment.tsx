@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import {
   Drawer,
   DrawerClose,
@@ -20,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import { Plus, Minus, PlusCircle } from "lucide-react";
+import { Plus, Minus, PlusCircle, Trash2 } from "lucide-react";
 import { Input } from "./ui/input";
 import { useStore } from "../Store";
 
@@ -30,6 +31,9 @@ import {
   PredecessorRelation,
   Equipment,
   durationOptions,
+  resourceOptions,
+  Resource,
+  ResourceOption,
 } from "../Types";
 import {
   Select,
@@ -38,6 +42,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { Badge } from "./ui/badge";
+import { PopoverClose } from "@radix-ui/react-popover";
 
 type Props = {
   equipmentToEdit?: Equipment | null;
@@ -111,6 +117,54 @@ const EditProcedure = ({
     }));
   };
 
+  const handleAddResource = (operationId: string, resource: Resource) => {
+    setEquipment((prev) => ({
+      ...prev,
+      operations: prev.operations.map((op) =>
+        op.id === operationId
+          ? {
+              ...op,
+              resources: [...op.resources, resource],
+            }
+          : op
+      ),
+    }));
+  };
+
+  const handleRemoveResource = (operationId: string, resourceId: string) => {
+    setEquipment((prev) => ({
+      ...prev,
+      operations: prev.operations.map((op) =>
+        op.id === operationId
+          ? {
+              ...op,
+              resources: op.resources.filter((r) => r.id !== resourceId),
+            }
+          : op
+      ),
+    }));
+  };
+
+  const handleResourceChange = (
+    operationId: string,
+    resourceId: string,
+    updatedResource: Resource
+  ) => {
+    setEquipment((prev) => ({
+      ...prev,
+      operations: prev.operations.map((op) =>
+        op.id === operationId
+          ? {
+              ...op,
+              resources: op.resources.map((r) =>
+                r.id === resourceId ? updatedResource : r
+              ),
+            }
+          : op
+      ),
+    }));
+  };
+
   const handleSubmit = () => {
     if (equipmentToEdit) {
       updateEquipment(equipment);
@@ -179,6 +233,7 @@ const EditProcedure = ({
                     <TableHead>Predecessor</TableHead>
                     <TableHead>Relation</TableHead>
                     <TableHead>Offset</TableHead>
+                    <TableHead>Resources</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -231,7 +286,10 @@ const EditProcedure = ({
                               <SelectContent>
                                 {durationOptions.map((duration) => {
                                   return (
-                                    <SelectItem value={duration.value}>
+                                    <SelectItem
+                                      value={duration.value}
+                                      key={duration.label}
+                                    >
                                       {duration.label}
                                     </SelectItem>
                                   );
@@ -290,7 +348,7 @@ const EditProcedure = ({
                           </SelectContent>
                         </Select>
                       </TableCell>
-                      <TableCell className="p-2">
+                      <TableCell className="p-2 w-30">
                         <Select
                           value={operation.predecessorRelation}
                           onValueChange={(value: PredecessorRelation) =>
@@ -354,7 +412,10 @@ const EditProcedure = ({
                               <SelectContent>
                                 {durationOptions.map((duration) => {
                                   return (
-                                    <SelectItem value={duration.value}>
+                                    <SelectItem
+                                      value={duration.value}
+                                      key={duration.value}
+                                    >
                                       {duration.label}
                                     </SelectItem>
                                   );
@@ -366,12 +427,72 @@ const EditProcedure = ({
                       </TableCell>
 
                       <TableCell className="p-2">
+                        <div className="flex flex-wrap gap-2">
+                          {operation.resources.map((resource) => {
+                            const resourceData = resourceOptions.find(
+                              (o: ResourceOption) =>
+                                o.id === resource.resourceOptionId
+                            );
+
+                            return (
+                              <Popover key={resource.id}>
+                                <PopoverTrigger>
+                                  <Badge
+                                    variant="secondary"
+                                    className="cursor-pointer"
+                                  >
+                                    {resourceData!.name} - {resource.value}{" "}
+                                    {resourceData!.unit}
+                                  </Badge>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-80">
+                                  <ResourceForm
+                                    resource={resource}
+                                    onSubmit={(editedResource) => {
+                                      handleResourceChange(
+                                        operation.id,
+                                        resource.id,
+                                        editedResource
+                                      );
+                                    }}
+                                    onDelete={() =>
+                                      handleRemoveResource(
+                                        operation.id,
+                                        resource.id
+                                      )
+                                    }
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            );
+                          })}
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <div>
+                                <Button variant="outline" size="sm">
+                                  <Plus className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80">
+                              <ResourceForm
+                                resource={null}
+                                onSubmit={(newResource) => {
+                                  handleAddResource(operation.id, newResource);
+                                }}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                      </TableCell>
+
+                      <TableCell className="p-2">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleRemoveOperation(operation.id)}
                         >
-                          <Minus className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -398,3 +519,82 @@ const EditProcedure = ({
 };
 
 export default EditProcedure;
+
+const ResourceForm = ({
+  resource,
+  onSubmit,
+  onDelete,
+}: {
+  resource: Resource | null;
+  onSubmit: (resource: Resource) => void;
+  onDelete?: () => void;
+}) => {
+  const initialResource: Resource = {
+    id: uuidv4(),
+    resourceOptionId: resourceOptions[0].id,
+    value: 10,
+  };
+
+  const [formData, setFormData] = useState<Resource>(
+    resource || initialResource
+  );
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="resourceName">Resource</Label>
+        <Select
+          value={formData.resourceOptionId}
+          onValueChange={(value) =>
+            setFormData((prev) => ({ ...prev, resourceOptionId: value }))
+          }
+        >
+          <SelectTrigger id="resourceName">
+            <SelectValue placeholder="Select resource" />
+          </SelectTrigger>
+          <SelectContent>
+            {resourceOptions.map((option) => (
+              <SelectItem key={option.id} value={option.id}>
+                {option.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center space-x-2">
+          <Input
+            id="resourceValue"
+            type="number"
+            value={formData.value}
+            onChange={(e) =>
+              setFormData((prev: Resource) => ({
+                ...prev,
+                value: Number(e.target.value),
+              }))
+            }
+            className="flex-grow"
+          />
+          <span className="text-sm">
+            {
+              resourceOptions.find((o) => o.id === formData.resourceOptionId)
+                ?.unit
+            }
+          </span>
+        </div>
+      </div>
+      <PopoverClose className="flex justify-between w-full">
+        <Button type="submit">{resource ? "Update" : "Add"}</Button>
+        {resource && onDelete && (
+          <Button type="button" variant="destructive" onClick={onDelete}>
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        )}
+      </PopoverClose>
+    </form>
+  );
+};

@@ -14,14 +14,25 @@ export type Campaign = {
   frequencyUnit: DurationUnit;
 };
 
-type Resource = {
-  title: string;
+export type Resource = {
+  resourceOptionId: string;
   id: string;
-  unit: string;
-  label: string;
-  value: string;
-  amount: string;
+  value: number;
+  // unit: string;
 };
+
+export type ResourceOption = {
+  id: string;
+  name: string;
+  unit: string;
+};
+
+export const resourceOptions = [
+  { id: "1", name: "Water", unit: "lpm" },
+  { id: "2", name: "Steam", unit: "kg/hr" },
+  { id: "3", name: "Electricity", unit: "kW" },
+  { id: "4", name: "CIP", unit: "lpm" },
+];
 
 export type DurationUnit = "day" | "hr" | "min" | "sec";
 
