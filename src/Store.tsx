@@ -5,6 +5,7 @@ import {
   CampaignSchedulingType,
   DurationUnit,
   Equipment,
+  ResourceOption,
   State,
 } from "./Types";
 import { v4 as uuidv4 } from "uuid";
@@ -12,6 +13,8 @@ import {
   MAX_BATCHES_PER_CAMPAIGN,
   MIN_BATCHES_PER_CAMPAIGN,
 } from "./utils/constants";
+
+//TODO: On deleteResourceOption, delete all equipment resources of the same type.
 
 //Procedure: Fermentation
 //Operation: Mixing
@@ -26,6 +29,12 @@ const initialState: State = {
     frequency: 7,
     frequencyUnit: "day",
   },
+  resourceOptions: [
+    { id: "1", name: "Water", unit: "lpm" },
+    { id: "2", name: "Steam", unit: "kg/hr" },
+    { id: "3", name: "Electricity", unit: "kW" },
+    { id: "4", name: "CIP", unit: "lpm" },
+  ],
 };
 
 type Action = {
@@ -46,6 +55,9 @@ type Action = {
   ) => void;
   updateCampaignFrequency: (frequency: number) => void;
   updateCampaignFrequencyUnit: (frequencyUnit: DurationUnit) => void;
+  addResourceOption: (resource: ResourceOption) => void;
+  updateResourceOption: (resource: ResourceOption) => void;
+  deleteResourceOption: (resource: ResourceOption) => void;
 };
 
 export const useStore = create<State & Action>()(
@@ -156,6 +168,22 @@ export const useStore = create<State & Action>()(
       updateCampaignFrequencyUnit: (frequencyUnit: DurationUnit) =>
         set((state) => ({
           campaign: { ...state.campaign, frequencyUnit },
+        })),
+      addResourceOption: (resource: ResourceOption) =>
+        set((state) => ({
+          resourceOptions: [...state.resourceOptions, resource],
+        })),
+      updateResourceOption: (resource: ResourceOption) =>
+        set((state) => ({
+          resourceOptions: state.resourceOptions.map((r: ResourceOption) =>
+            r.id === resource.id ? resource : r
+          ),
+        })),
+      deleteResourceOption: (resource: ResourceOption) =>
+        set((state) => ({
+          resourceOptions: state.resourceOptions.filter(
+            (r: ResourceOption) => r.id !== resource.id
+          ),
         })),
     }),
     {

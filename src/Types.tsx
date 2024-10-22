@@ -2,7 +2,7 @@ export type State = {
   projectTitle: string;
   equipment: Equipment[];
   campaign: Campaign;
-  // resourceOptions: ResourceOption[];
+  resourceOptions: ResourceOption[];
 };
 
 export type CampaignSchedulingType = "optimized" | "fixed";
@@ -26,13 +26,6 @@ export type ResourceOption = {
   name: string;
   unit: string;
 };
-
-export const resourceOptions = [
-  { id: "1", name: "Water", unit: "lpm" },
-  { id: "2", name: "Steam", unit: "kg/hr" },
-  { id: "3", name: "Electricity", unit: "kW" },
-  { id: "4", name: "CIP", unit: "lpm" },
-];
 
 export type DurationUnit = "day" | "hr" | "min" | "sec";
 

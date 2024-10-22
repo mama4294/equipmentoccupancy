@@ -8,6 +8,7 @@ import { EquipmentWithTiming } from "@/Types";
 import BottleneckCard from "./BottleneckCard";
 import BatchTimeCard from "./BatchTimeCard";
 import CampaignCard from "./CampaingCard";
+import ResourcesCard from "./ResourcesCard";
 
 function Dashboard() {
   const { equipment, campaign } = useStore();
@@ -32,13 +33,6 @@ function Dashboard() {
 
   const processDetails = calculateProcessDetails(calculatedEquipment);
 
-  console.log("process deatils");
-  console.table(processDetails);
-
-  // useEffect(() => {
-  //   console.table(calculatedEquipment.flatMap((p) => p.operations));
-  // }, [calculatedEquipment]);
-
   return (
     <div className="h-screen w-screen ">
       <div className="flex flex-col">
@@ -52,6 +46,7 @@ function Dashboard() {
               <BatchTimeCard details={processDetails} />
               <BottleneckCard details={processDetails} />
               <CampaignCard details={processDetails} />
+              <ResourcesCard />
               <EquipmentOccupancyChart
                 equipmentWithTiming={calculatedEquipment}
               />

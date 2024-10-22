@@ -8,6 +8,7 @@ import {
 import { ProcessDetails } from "@/Types";
 import { formatDuration } from "@/utils/time";
 import { Progress } from "./ui/progress";
+import { Milk } from "lucide-react";
 
 const BottleneckCard = ({ details }: { details: ProcessDetails }) => {
   const { bottleneck, batchDuration } = details;
@@ -23,10 +24,10 @@ const BottleneckCard = ({ details }: { details: ProcessDetails }) => {
   return (
     <Card className="max-w-md overflow-hidden transition-all hover:shadow-lg col-span-1">
       <CardHeader className="p-4 pb-2">
-        <CardTitle className="text-lg font-semibold">Bottleneck</CardTitle>
-        {/* <CardDescription>
-          Speeding up this equipment can accelerate the entire process.
-        </CardDescription> */}
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl font-semibold">Bottleneck</CardTitle>
+          <Milk />
+        </div>
       </CardHeader>
       <CardContent className="p-4">
         <div className="flex justify-between items-baseline mb-2">

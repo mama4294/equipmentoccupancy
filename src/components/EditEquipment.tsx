@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import { Plus, Minus, PlusCircle, Trash2 } from "lucide-react";
+import { Plus, PlusCircle, Trash2 } from "lucide-react";
 import { Input } from "./ui/input";
 import { useStore } from "../Store";
 
@@ -31,7 +31,6 @@ import {
   PredecessorRelation,
   Equipment,
   durationOptions,
-  resourceOptions,
   Resource,
   ResourceOption,
 } from "../Types";
@@ -62,6 +61,7 @@ const EditProcedure = ({
     addEquipment,
     updateEquipment,
     equipment: equipmentList,
+    resourceOptions,
   } = useStore();
 
   const initialOperation: Operation = {
@@ -529,6 +529,8 @@ const ResourceForm = ({
   onSubmit: (resource: Resource) => void;
   onDelete?: () => void;
 }) => {
+  const { resourceOptions } = useStore();
+
   const initialResource: Resource = {
     id: uuidv4(),
     resourceOptionId: resourceOptions[0].id,
