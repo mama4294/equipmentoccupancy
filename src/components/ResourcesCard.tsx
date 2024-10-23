@@ -31,7 +31,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Ellipsis, Pencil, Plus, Trash, Zap } from "lucide-react";
+import {
+  Check,
+  Ellipsis,
+  Pencil,
+  Plus,
+  Save,
+  Trash,
+  X,
+  Zap,
+} from "lucide-react";
 import { useStore } from "@/Store";
 import {
   Sheet,
@@ -50,8 +59,18 @@ import { PopoverClose } from "@radix-ui/react-popover";
 
 const ResourcesCard = () => {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [selectedResource, setSelectedResource] =
     useState<ResourceOption | null>(null);
+
+  const initialResource: ResourceOption = {
+    name: "",
+    unit: "",
+    id: "",
+  };
+
+  const [updatedOption, setUpdatedOption] =
+    useState<ResourceOption>(initialResource);
 
   const {
     resourceOptions,
@@ -95,46 +114,100 @@ const ResourcesCard = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {resourceOptions.map((option) => (
-                <TableRow key={option.id}>
-                  <TableCell>{option.name}</TableCell>
-                  <TableCell>{option.unit}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <Button variant="outline" className="w-12 p-2">
-                          <Ellipsis size={18} />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>
-                          <ResourcePopover
-                            resource={option}
-                            onSubmit={(option: ResourceOption) =>
-                              updateResourceOption(option)
-                            }
-                          />
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setSelectedResource(option);
-                            setDeleteConfirmationOpen(true);
-                          }}
-                        >
-                          <Trash size={18} className="mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {resourceOptions.map((option) => {
+                return (
+                  <TableRow key={option.id}>
+                    <TableCell className="p-1">
+                      {editingId === option.id ? (
+                        <Input
+                          className="px-0"
+                          value={updatedOption.name}
+                          onChange={(e) =>
+                            setUpdatedOption({
+                              ...updatedOption,
+                              name: e.target.value,
+                            })
+                          }
+                        />
+                      ) : (
+                        option.name
+                      )}
+                    </TableCell>
+                    <TableCell className="p-1">
+                      {editingId === option.id ? (
+                        <Input
+                          className="px-0"
+                          value={updatedOption.unit}
+                          onChange={(e) =>
+                            setUpdatedOption({
+                              ...updatedOption,
+                              unit: e.target.value,
+                            })
+                          }
+                        />
+                      ) : (
+                        option.unit
+                      )}
+                    </TableCell>
+                    <TableCell className="p-1">
+                      {editingId === option.id ? (
+                        <div className="flex">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setEditingId(null);
+                              setUpdatedOption(initialResource);
+                            }}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              updateResourceOption(updatedOption);
+                              setEditingId(null);
+                              setUpdatedOption(initialResource);
+                            }}
+                          >
+                            <Check className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger>
+                            <Button variant="outline">
+                              <Ellipsis className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setUpdatedOption(option);
+                                setEditingId(option.id);
+                              }}
+                            >
+                              <Pencil className="mr-2 w-4 h-4" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedResource(option);
+                                setDeleteConfirmationOpen(true);
+                              }}
+                            >
+                              <Trash className="mr-2 w-4 h-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
-          <ResourcePopover
-            resource={null}
-            onSubmit={(option: ResourceOption) => addResourceOption(option)}
-          />
           <ResourcePopover
             resource={null}
             onSubmit={(option: ResourceOption) => addResourceOption(option)}
