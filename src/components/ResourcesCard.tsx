@@ -6,6 +6,24 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import {
   Table,
   TableBody,
   TableCell,
@@ -13,7 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Plus, Save, X, Zap } from "lucide-react";
+import { Ellipsis, Pencil, Plus, Trash, Zap } from "lucide-react";
 import { useStore } from "@/Store";
 import {
   Sheet,
@@ -31,7 +49,16 @@ import { Label } from "./ui/label";
 import { PopoverClose } from "@radix-ui/react-popover";
 
 const ResourcesCard = () => {
-  const { resourceOptions, addResourceOption } = useStore();
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [selectedResource, setSelectedResource] =
+    useState<ResourceOption | null>(null);
+
+  const {
+    resourceOptions,
+    addResourceOption,
+    updateResourceOption,
+    deleteResourceOption,
+  } = useStore();
 
   return (
     <Sheet>
@@ -64,7 +91,7 @@ const ResourcesCard = () => {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Unit</TableHead>
-                <TableHead className="w-[100px]">Actions</TableHead>
+                <TableHead className="w-[100px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -72,6 +99,34 @@ const ResourcesCard = () => {
                 <TableRow key={option.id}>
                   <TableCell>{option.name}</TableCell>
                   <TableCell>{option.unit}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <Button variant="outline" className="w-12 p-2">
+                          <Ellipsis size={18} />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>
+                          <ResourcePopover
+                            resource={option}
+                            onSubmit={(option: ResourceOption) =>
+                              updateResourceOption(option)
+                            }
+                          />
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setSelectedResource(option);
+                            setDeleteConfirmationOpen(true);
+                          }}
+                        >
+                          <Trash size={18} className="mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -79,6 +134,19 @@ const ResourcesCard = () => {
           <ResourcePopover
             resource={null}
             onSubmit={(option: ResourceOption) => addResourceOption(option)}
+          />
+          <ResourcePopover
+            resource={null}
+            onSubmit={(option: ResourceOption) => addResourceOption(option)}
+          />
+          <DeleteConfirmation
+            open={deleteConfirmationOpen}
+            setOpen={setDeleteConfirmationOpen}
+            onSubmit={() => {
+              if (selectedResource) {
+                deleteResourceOption(selectedResource);
+              }
+            }}
           />
         </SheetHeader>
       </SheetContent>
@@ -114,7 +182,7 @@ const ResourcePopover = ({
     <Popover>
       <PopoverTrigger asChild>
         <Button>
-          <Plus className="w-4 h-4 mr-2" /> Add Resource
+          <Plus className="w-4 h-4 mr-2" /> New Resource
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
@@ -144,16 +212,47 @@ const ResourcePopover = ({
                   unit: e.target.value,
                 }))
               }
-              placeholder="unit"
+              placeholder="Unit"
             />
           </div>
           <PopoverClose className="flex justify-between w-full">
             <Button type="submit" className="w-full">
-              {resource ? "Update" : "Add"} Resource
+              Save
             </Button>
           </PopoverClose>
         </form>
       </PopoverContent>
     </Popover>
+  );
+};
+
+const DeleteConfirmation = ({
+  open,
+  setOpen,
+  onSubmit,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  onSubmit: () => void;
+}) => {
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      {/* <DialogTrigger>Open</DialogTrigger> */}
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete Resource</DialogTitle>
+          <DialogDescription>
+            This action cannot be undone. This will permanently delete this
+            resource and remove it from all associated equipment.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose>
+            <Button variant="outline">Cancel</Button>
+            <Button onClick={onSubmit}>Delete</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
