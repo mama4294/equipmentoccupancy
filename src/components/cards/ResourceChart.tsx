@@ -1,15 +1,13 @@
 import { TrendingUp } from "lucide-react";
 import {
-  CartesianGrid,
-  ScatterChart,
-  Scatter,
-  Tooltip,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
-  Area,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
 import {
   Card,
   CardContent,
@@ -18,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import {
   ChartConfig,
   ChartContainer,
@@ -59,12 +58,10 @@ const ChartCard = ({
     resourceId: resource.id,
   });
 
-  console.log(chartData);
-
   const description = "A multiple line chart";
 
   return (
-    <Card className="w-full col-span-2">
+    <Card className="w-full col-span-4">
       <CardHeader>
         <CardTitle>{resource.name}</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
@@ -72,7 +69,10 @@ const ChartCard = ({
       <CardContent>
         <ChartContainer className="h-[400px]" config={chartConfig}>
           <ResponsiveContainer width="100%" height="100%">
-            <ScatterChart>
+            <AreaChart
+              data={chartData}
+              margin={{ top: 20, right: 20, bottom: 20, left: 40 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="time"
@@ -81,7 +81,45 @@ const ChartCard = ({
                 type="number"
                 domain={["auto", "auto"]}
               />
-              <YAxis dataKey="value" name="Value" domain={[0, "auto"]} />
+              <YAxis
+                dataKey="value"
+                name="Value"
+                domain={[0, "auto"]}
+                label={{
+                  value: resource.unit,
+                  angle: -90,
+                  position: "insideLeft",
+                }}
+              />
+              <Tooltip content={<CustomTooltip unit={resource.unit} />} />
+              <Area
+                // data={chartData}
+                type="linear"
+                dataKey="value"
+                stroke="hsl(var(--chart-1))"
+                fill="hsl(var(--chart-1) / 0.5)"
+                isAnimationActive={false}
+              />
+            </AreaChart>
+            {/* <ScatterChart>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="time"
+                name="Time"
+                tickFormatter={formatTime}
+                type="number"
+                domain={["auto", "auto"]}
+              />
+              <YAxis
+                dataKey="value"
+                name="Value"
+                domain={[0, "auto"]}
+                label={{
+                  value: resource.unit,
+                  angle: -90,
+                  position: "insideLeft",
+                }}
+              />
               <Tooltip content={<CustomTooltip unit={resource.unit} />} />
               <Area
                 dataKey="value"
@@ -94,48 +132,13 @@ const ChartCard = ({
               />
               <Scatter
                 data={chartData}
-                fill="hsl(var(--primary))"
-                line={{ stroke: "hsl(var(--primary))", strokeWidth: 2 }}
+                fill="hsl(var(--chart-1))"
+                line={{ stroke: "hsl(var(--chart-1))", strokeWidth: 1 }}
                 lineType="joint"
               />
-            </ScatterChart>
+            </ScatterChart> */}
           </ResponsiveContainer>
         </ChartContainer>
-
-        {/* <ChartContainer config={chartConfig}>
-          <LineChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <Line
-              dataKey="desktop"
-              type="monotone"
-              stroke="var(--color-desktop)"
-              strokeWidth={2}
-              dot={false}
-            />
-            <Line
-              dataKey="mobile"
-              type="monotone"
-              stroke="var(--color-mobile)"
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
-        </ChartContainer> */}
       </CardContent>
       <CardFooter>
         <div className="flex w-full items-start gap-2 text-sm">
