@@ -1,20 +1,15 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProcessDetails } from "@/Types";
 import { formatDuration } from "@/utils/time";
-import { Progress } from "./ui/progress";
 import { Clock } from "lucide-react";
 
 const BatchTimeCard = ({ details }: { details: ProcessDetails }) => {
-  const { batchDuration, bottleneck } = details;
+  const { batchDuration, bottleneck, batchQty } = details;
 
   const batchTiming = formatDuration(batchDuration);
-  const staggerTime = formatDuration(bottleneck.duration);
+  const staggerTime = bottleneck
+    ? formatDuration(bottleneck.duration)
+    : { value: 0, unit: "hr" };
 
   return (
     <Card className="max-w-md overflow-hidden transition-all hover:shadow-lg col-span-1">
@@ -38,16 +33,18 @@ const BatchTimeCard = ({ details }: { details: ProcessDetails }) => {
           </div>
           {/* <p>How long it takes to start and finish a single batch</p> */}
         </div>
-        <div className="mb-2">
-          <div className="flex justify-between items-baseline">
-            <span className="text-sm font-medium ">New batch every</span>
-            <div className="flex items-baseline gap-1 text-3xl font-bold tabular-nums leading-none">
-              {staggerTime.value}
-              <span className="text-sm font-normal">{staggerTime.unit}</span>
+        {batchQty > 1 && (
+          <div className="mb-2">
+            <div className="flex justify-between items-baseline">
+              <span className="text-sm font-medium ">New batch every</span>
+              <div className="flex items-baseline gap-1 text-3xl font-bold tabular-nums leading-none">
+                {staggerTime.value}
+                <span className="text-sm font-normal">{staggerTime.unit}</span>
+              </div>
             </div>
+            {/* <p>How long it takes to start and finish a single batch</p> */}
           </div>
-          {/* <p>How long it takes to start and finish a single batch</p> */}
-        </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { ProcessDetails } from "@/Types";
 import { formatDuration } from "@/utils/time";
-import { Progress } from "./ui/progress";
+import { Progress } from "../ui/progress";
 import { ChartNoAxesGantt } from "lucide-react";
 
 const CampaignCard = ({ details }: { details: ProcessDetails }) => {

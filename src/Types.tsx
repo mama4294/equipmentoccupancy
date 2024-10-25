@@ -79,3 +79,5 @@ export type ProcessDetails = {
   campaignDuration: number; //seconds
   batchQty: number;
 };
+
+export type Timepoint = { time: number; value: number };

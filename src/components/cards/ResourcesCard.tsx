@@ -49,12 +49,12 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "./ui/sheet";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+} from "../ui/sheet";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import { useState } from "react";
 import { ResourceOption } from "@/Types";
-import { Label } from "./ui/label";
+import { Label } from "../ui/label";
 import { PopoverClose } from "@radix-ui/react-popover";
 
 const ResourcesCard = () => {
@@ -82,7 +82,7 @@ const ResourcesCard = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Card className="max-w-md overflow-hidden transition-all hover:shadow-lg col-span-1">
+        <Card className="max-w-md overflow-hidden transition-all hover:shadow-lg col-span-1 cursor-pointer">
           <CardHeader className="p-4 pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-xl font-semibold">Resources</CardTitle>

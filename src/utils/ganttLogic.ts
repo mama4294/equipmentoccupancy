@@ -5,6 +5,9 @@ import {
   Campaign,
   EquipmentWithTiming,
   ProcessDetails,
+  OperationWithTiming,
+  Timepoint,
+  Resource,
 } from "../Types";
 
 export const calculateTiming = (
@@ -230,6 +233,9 @@ const calculateCampaignDuration = (
 const calculateBatchQuantity = (equipment: EquipmentWithTiming): number => {
   let batchQty = 1;
 
+  if (!equipment) return batchQty;
+  if (!equipment.operations) return batchQty;
+
   equipment.operations.forEach((op) => {
     if (op.batchNumber > batchQty) {
       batchQty = op.batchNumber;
@@ -237,4 +243,67 @@ const calculateBatchQuantity = (equipment: EquipmentWithTiming): number => {
   });
 
   return batchQty;
+};
+
+type Point = {
+  x: number;
+  y: number;
+};
+
+type Line = {
+  start: Point;
+  end: Point;
+};
+
+export const calculateResourceChartData = ({
+  equipmentWithTiming,
+  resourceId,
+}: {
+  equipmentWithTiming: EquipmentWithTiming[];
+  resourceId: string;
+}): Timepoint[] => {
+  const lines: Line[] = [];
+
+  // Step 1: Create lines from operations
+  equipmentWithTiming.forEach((equipment) => {
+    equipment.operations.forEach((operation) => {
+      const resource = operation.resources.find(
+        (res) => res.resourceOptionId === resourceId
+      );
+      if (resource) {
+        const value = resource.value;
+        lines.push({
+          start: { x: operation.start, y: value },
+          end: { x: operation.end, y: value },
+        });
+      }
+    });
+  });
+
+  // Step 2: Calculate totals at unique x-values
+  const xValues = new Set<number>();
+  lines.forEach((line: Line) => {
+    xValues.add(line.start.x - 1);
+    xValues.add(line.start.x);
+    xValues.add(line.end.x);
+    xValues.add(line.end.x + 1);
+  });
+
+  const uniqueXValues = Array.from(xValues).sort((a, b) => a - b);
+  const totalPoints: Timepoint[] = uniqueXValues.map((x) => {
+    let total = 0;
+    lines.forEach((line: Line) => {
+      if (line.start.x <= x && line.end.x >= x) {
+        total += line.start.y;
+      }
+    });
+    return { time: x, value: total };
+  });
+
+  // Step 3: Add start and end points
+  return [
+    { time: 0, value: 0 },
+    ...totalPoints,
+    { time: calculateCampaignDuration(equipmentWithTiming), value: 0 },
+  ];
 };

@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { ProcessDetails } from "@/Types";
 import { formatDuration } from "@/utils/time";
-import { Progress } from "./ui/progress";
+import { Progress } from "../ui/progress";
 import { Milk } from "lucide-react";
 
 const BottleneckCard = ({ details }: { details: ProcessDetails }) => {

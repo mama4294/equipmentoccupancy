@@ -2,16 +2,21 @@ import { useEffect, useMemo } from "react";
 import Header from "./Header";
 import EquipmentOccupancyChart from "./EquipmentOccupancyChart";
 import { useStore } from "../Store";
-import { calculateProcessDetails, calculateTiming } from "../utils/ganttLogic";
+import {
+  calculateProcessDetails,
+  calculateResourceChartData,
+  calculateTiming,
+} from "../utils/ganttLogic";
 import { useToast } from "../hooks/use-toast";
-import { EquipmentWithTiming } from "@/Types";
-import BottleneckCard from "./BottleneckCard";
-import BatchTimeCard from "./BatchTimeCard";
-import CampaignCard from "./CampaingCard";
-import ResourcesCard from "./ResourcesCard";
+import { EquipmentWithTiming, ResourceOption } from "@/Types";
+import BottleneckCard from "./cards/BottleneckCard";
+import BatchTimeCard from "./cards/BatchTimeCard";
+import CampaignCard from "./cards/CampaingCard";
+import ResourcesCard from "./cards/ResourcesCard";
+import ChartCard from "./cards/ResourceChart";
 
 function Dashboard() {
-  const { equipment, campaign } = useStore();
+  const { equipment, campaign, resourceOptions } = useStore();
   const { toast } = useToast();
 
   const calculatedEquipment = useMemo<EquipmentWithTiming[]>(() => {
@@ -43,13 +48,25 @@ function Dashboard() {
             x-chunk="dashboard-03-chunk-0"
           >
             <div className="w-full grid grid-cols-4 gap-4">
-              <BatchTimeCard details={processDetails} />
-              <BottleneckCard details={processDetails} />
-              <CampaignCard details={processDetails} />
-              <ResourcesCard />
+              {equipment.length > 0 && (
+                <>
+                  <BatchTimeCard details={processDetails} />
+                  <BottleneckCard details={processDetails} />
+                  <CampaignCard details={processDetails} />
+                  <ResourcesCard />
+                </>
+              )}
               <EquipmentOccupancyChart
                 equipmentWithTiming={calculatedEquipment}
               />
+
+              {equipment.length > 0 &&
+                resourceOptions.map((option: ResourceOption) => (
+                  <ChartCard
+                    resource={option}
+                    equipment={calculatedEquipment}
+                  />
+                ))}
             </div>
           </div>
         </main>
