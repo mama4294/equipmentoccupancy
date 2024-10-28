@@ -44,7 +44,7 @@ function Dashboard() {
         <Header />
         <main className="flex-1 overflow-auto p-4">
           <div
-            className="relative hidden flex-col items-start gap-8 md:flex"
+            className="relative flex-col items-start gap-8 md:flex"
             x-chunk="dashboard-03-chunk-0"
           >
             <div className="w-full grid grid-cols-4 gap-4">
