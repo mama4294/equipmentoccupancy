@@ -1,4 +1,4 @@
-import { TrendingUp } from "lucide-react";
+import { ArrowUp, TrendingUp } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -7,6 +7,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  ReferenceLine,
 } from "recharts";
 import {
   Card,
@@ -17,22 +18,112 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { EquipmentWithTiming, ResourceOption } from "@/Types";
-import { calculateResourceChartData } from "@/utils/ganttLogic";
+import {
+  calculateResourceChartData,
+  getAverageUtilityConsumption,
+  getPeakResourceConsumption,
+} from "@/utils/ganttLogic";
+import { Label } from "../ui/label";
 
-// const chartData = [
-//   { month: "January", desktop: 186, mobile: 80 },
-//   { month: "February", desktop: 305, mobile: 200 },
-//   { month: "March", desktop: 237, mobile: 120 },
-//   { month: "April", desktop: 73, mobile: 190 },
-//   { month: "May", desktop: 209, mobile: 130 },
-//   { month: "June", desktop: 214, mobile: 140 },
+// chartData = [
+//   {
+//     time: 0,
+//     value: 0,
+//   },
+//   {
+//     time: 3599,
+//     value: 0,
+//   },
+//   {
+//     time: 3600,
+//     value: 1,
+//   },
+//   {
+//     time: 7199,
+//     value: 1,
+//   },
+//   {
+//     time: 7200,
+//     value: 2,
+//   },
+//   {
+//     time: 89999,
+//     value: 2,
+//   },
+//   {
+//     time: 90000,
+//     value: 22,
+//   },
+//   {
+//     time: 90001,
+//     value: 21,
+//   },
+//   {
+//     time: 93600,
+//     value: 21,
+//   },
+//   {
+//     time: 93601,
+//     value: 20,
+//   },
+//   {
+//     time: 98999,
+//     value: 20,
+//   },
+//   {
+//     time: 99000,
+//     value: 21,
+//   },
+//   {
+//     time: 100800,
+//     value: 21,
+//   },
+//   {
+//     time: 100801,
+//     value: 1,
+//   },
+//   {
+//     time: 102599,
+//     value: 1,
+//   },
+//   {
+//     time: 102600,
+//     value: 2,
+//   },
+//   {
+//     time: 185399,
+//     value: 2,
+//   },
+//   {
+//     time: 185400,
+//     value: 22,
+//   },
+//   {
+//     time: 185401,
+//     value: 21,
+//   },
+//   {
+//     time: 189000,
+//     value: 21,
+//   },
+//   {
+//     time: 189001,
+//     value: 20,
+//   },
+//   {
+//     time: 196200,
+//     value: 20,
+//   },
+//   {
+//     time: 196201,
+//     value: 0,
+//   },
+//   {
+//     time: 196200,
+//     value: 0,
+//   },
 // ];
 
 const chartConfig = {
@@ -60,11 +151,16 @@ const ChartCard = ({
 
   if (chartData.length < 3) return <></>;
 
+  console.log(chartData);
+
+  const peakConsumption = getPeakResourceConsumption(chartData);
+  const averageConsumption = getAverageUtilityConsumption(chartData);
+
   return (
     <Card className="w-full col-span-2">
       <CardHeader>
         <CardTitle>{resource.name}</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardDescription>Resource Usage Over Time</CardDescription>
       </CardHeader>
       <CardContent className="w-full">
         <ChartContainer className="h-[200px] w-full" config={chartConfig}>
@@ -100,20 +196,32 @@ const ChartCard = ({
                 fill="hsl(var(--chart-1) / 0.5)"
                 isAnimationActive={false}
               />
+              <ReferenceLine
+                y={peakConsumption}
+                stroke="hsl(var(--chart-2))"
+                strokeDasharray="3 3"
+              />
+              <ReferenceLine
+                y={averageConsumption}
+                stroke="hsl(var(--chart-3))"
+                strokeDasharray="3 3"
+              />
             </AreaChart>
           </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              Showing total visitors for the last 6 months
-            </div>
-          </div>
+      <CardFooter className="flex justify-between items-center">
+        <div className="flex items-center space-x-2">
+          <ArrowUp className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm font-medium">
+            Peak: {peakConsumption.toLocaleString()} {resource.unit}
+          </span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm font-medium">
+            Avg: {averageConsumption.toLocaleString()} {resource.unit}
+          </span>
         </div>
       </CardFooter>
     </Card>

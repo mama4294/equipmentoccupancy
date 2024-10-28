@@ -307,3 +307,34 @@ export const calculateResourceChartData = ({
     { time: calculateCampaignDuration(equipmentWithTiming), value: 0 },
   ];
 };
+
+export const getPeakResourceConsumption = (data: Timepoint[]): number => {
+  let peak = -Infinity;
+  data.forEach((timepoint) => {
+    if (timepoint.value > peak) {
+      peak = timepoint.value;
+    }
+  });
+  return peak;
+};
+
+export const getAverageUtilityConsumption = (data: Timepoint[]): number => {
+  if (data.length < 2) return 0; // No average if less than two timepoints
+
+  let totalArea = 0;
+  let totalTime = 0;
+
+  for (let i = 1; i < data.length; i++) {
+    const prev = data[i - 1];
+    const curr = data[i];
+
+    // Calculate time interval and area under the curve segment
+    const timeInterval = curr.time - prev.time;
+    const area = prev.value * timeInterval;
+
+    totalArea += area;
+    totalTime += timeInterval;
+  }
+
+  return totalTime > 0 ? totalArea / totalTime : 0;
+};
