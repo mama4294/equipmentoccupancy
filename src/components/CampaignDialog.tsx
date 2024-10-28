@@ -5,8 +5,6 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetFooter,
-  SheetClose,
 } from "./ui/sheet";
 import {
   Select,
@@ -17,13 +15,7 @@ import {
 } from "@/components/ui/select";
 
 import { Button } from "./ui/button";
-import {
-  ChartNoAxesGantt,
-  Minus,
-  Plus,
-  PlusCircle,
-  Settings,
-} from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { ReactNode, useState } from "react";
@@ -127,7 +119,8 @@ export default function CampaignDialog({ children }: { children: ReactNode }) {
                         updateCampaignFrequency(parseInt(e.target.value))
                       }
                       min={1}
-                      className="pr-16 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="pr-16 [appearance:textfield] 
+                      [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <div className="absolute inset-y-0 right-0 flex items-center">
                       <Select

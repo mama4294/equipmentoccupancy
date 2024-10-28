@@ -20,7 +20,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 
 import {
@@ -31,16 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Check,
-  Ellipsis,
-  Pencil,
-  Plus,
-  Save,
-  Trash,
-  X,
-  Zap,
-} from "lucide-react";
+import { Check, Ellipsis, Pencil, Plus, Trash, X, Zap } from "lucide-react";
 import { useStore } from "@/Store";
 import {
   Sheet,

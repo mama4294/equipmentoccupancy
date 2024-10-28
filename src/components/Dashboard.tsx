@@ -1,12 +1,8 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import Header from "./Header";
 import EquipmentOccupancyChart from "./EquipmentOccupancyChart";
 import { useStore } from "../Store";
-import {
-  calculateProcessDetails,
-  calculateResourceChartData,
-  calculateTiming,
-} from "../utils/ganttLogic";
+import { calculateProcessDetails, calculateTiming } from "../utils/ganttLogic";
 import { useToast } from "../hooks/use-toast";
 import { EquipmentWithTiming, ResourceOption } from "@/Types";
 import BottleneckCard from "./cards/BottleneckCard";

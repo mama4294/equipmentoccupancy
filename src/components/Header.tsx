@@ -48,9 +48,10 @@ function Header() {
     <header className="sticky top-0 z-10 flex h-[57px] items-center gap-1 border-b bg-background px-4">
       <div className="border-b p-2">
         <DropdownMenu>
-          <DropdownMenuTrigger className="bg-background">
-            {" "}
-            <Menu className="size-5" />
+          <DropdownMenuTrigger className="">
+            <Button variant={"outline"}>
+              <Menu className="size-5" />
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={resetState}>

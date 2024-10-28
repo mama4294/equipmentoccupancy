@@ -1,13 +1,6 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProcessDetails } from "@/Types";
 import { formatDuration } from "@/utils/time";
-import { Progress } from "../ui/progress";
 import { ChartNoAxesGantt } from "lucide-react";
 import CampaignDialog from "../CampaignDialog";
 

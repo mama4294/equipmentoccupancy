@@ -31,7 +31,6 @@ import {
 import { Button } from "./ui/button";
 import { useStore } from "../Store";
 import EditProcedure from "./EditEquipment";
-import CampaignDialog from "./CampaignDialog";
 import { cn } from "@/lib/utils";
 
 export default function EOChart({

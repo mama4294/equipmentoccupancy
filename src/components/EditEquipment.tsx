@@ -238,7 +238,7 @@ const EditProcedure = ({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {equipment.operations.map((operation, index) => (
+                  {equipment.operations.map((operation) => (
                     <TableRow key={operation.id}>
                       <TableCell>
                         <Input

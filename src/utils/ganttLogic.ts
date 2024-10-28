@@ -5,9 +5,7 @@ import {
   Campaign,
   EquipmentWithTiming,
   ProcessDetails,
-  OperationWithTiming,
   Timepoint,
-  Resource,
 } from "../Types";
 
 export const calculateTiming = (
@@ -128,7 +126,7 @@ export const calculateTiming = (
 
   /////// THEN CALCULATE TIMING FOR MULTIPLE BATCHES IN CAMPAIGN//////
 
-  let multipleBatches = JSON.parse(JSON.stringify(singleBatch));
+  const multipleBatches = JSON.parse(JSON.stringify(singleBatch));
 
   let offset = maxEquipmentDuration;
   if (campaign.schedulingType === "fixed") {
@@ -137,7 +135,7 @@ export const calculateTiming = (
 
   // Loop through each equipment
   for (let i = 0; i < multipleBatches.length; i++) {
-    let newOperations = [...multipleBatches[i].operations];
+    const newOperations = [...multipleBatches[i].operations];
 
     // Add copies of each operation to the equipment for each additional batch with a batch offset
     for (let batchIndex = 1; batchIndex < campaign.quantity; batchIndex++) {

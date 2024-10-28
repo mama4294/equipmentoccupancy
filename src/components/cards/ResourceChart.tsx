@@ -25,7 +25,6 @@ import {
   getAverageUtilityConsumption,
   getPeakResourceConsumption,
 } from "@/utils/ganttLogic";
-import { Label } from "../ui/label";
 
 // chartData = [
 //   {
