@@ -11,7 +11,7 @@ import { useToast } from "../hooks/use-toast";
 import { EquipmentWithTiming, ResourceOption } from "@/Types";
 import BottleneckCard from "./cards/BottleneckCard";
 import BatchTimeCard from "./cards/BatchTimeCard";
-import CampaignCard from "./cards/CampaingCard";
+import CampaignCard from "./cards/CampaignCard";
 import ResourcesCard from "./cards/ResourcesCard";
 import ChartCard from "./cards/ResourceChart";
 

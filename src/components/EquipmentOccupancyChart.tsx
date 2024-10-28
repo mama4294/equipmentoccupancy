@@ -77,7 +77,6 @@ export default function EOChart({
           isOpen={isDrawerOpen}
           setIsOpen={setIsDrawerOpen}
         />
-        <CampaignDialog />
       </CardFooter>
     </Card>
   );

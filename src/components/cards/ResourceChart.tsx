@@ -58,20 +58,20 @@ const ChartCard = ({
     resourceId: resource.id,
   });
 
-  const description = "A multiple line chart";
+  if (chartData.length < 3) return <></>;
 
   return (
-    <Card className="w-full col-span-4">
+    <Card className="w-full col-span-2">
       <CardHeader>
         <CardTitle>{resource.name}</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer className="h-[400px]" config={chartConfig}>
+      <CardContent className="w-full">
+        <ChartContainer className="h-[200px] w-full" config={chartConfig}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={chartData}
-              margin={{ top: 20, right: 20, bottom: 20, left: 40 }}
+              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
@@ -101,42 +101,6 @@ const ChartCard = ({
                 isAnimationActive={false}
               />
             </AreaChart>
-            {/* <ScatterChart>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="time"
-                name="Time"
-                tickFormatter={formatTime}
-                type="number"
-                domain={["auto", "auto"]}
-              />
-              <YAxis
-                dataKey="value"
-                name="Value"
-                domain={[0, "auto"]}
-                label={{
-                  value: resource.unit,
-                  angle: -90,
-                  position: "insideLeft",
-                }}
-              />
-              <Tooltip content={<CustomTooltip unit={resource.unit} />} />
-              <Area
-                dataKey="value"
-                data={chartData}
-                activeDot={false}
-                type="natural"
-                fill="var(--color-desktop)"
-                fillOpacity={0.4}
-                stroke="var(--color-desktop)"
-              />
-              <Scatter
-                data={chartData}
-                fill="hsl(var(--chart-1))"
-                line={{ stroke: "hsl(var(--chart-1))", strokeWidth: 1 }}
-                lineType="joint"
-              />
-            </ScatterChart> */}
           </ResponsiveContainer>
         </ChartContainer>
       </CardContent>

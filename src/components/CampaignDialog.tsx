@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { useStore } from "../Store";
 import {
   MAX_BATCHES_PER_CAMPAIGN,
@@ -35,7 +35,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { CampaignSchedulingType, durationOptions, DurationUnit } from "@/Types";
 
-export default function CampaignDialog() {
+export default function CampaignDialog({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const {
     campaign,
@@ -52,12 +52,7 @@ export default function CampaignDialog() {
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button variant="outline" className="w-full">
-          <ChartNoAxesGantt className="mr-2 h-4 w-4" />
-          Campaign
-        </Button>
-      </SheetTrigger>
+      <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Create Campaign</SheetTitle>
