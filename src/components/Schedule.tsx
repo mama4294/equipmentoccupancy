@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import Header from "./Header";
 import EquipmentOccupancyChart from "./EquipmentOccupancyChart";
 import { useStore } from "../Store";
 import { calculateProcessDetails, calculateTiming } from "../utils/ganttLogic";
@@ -11,7 +10,7 @@ import CampaignCard from "./cards/CampaignCard";
 import ResourcesCard from "./cards/ResourcesCard";
 import ChartCard from "./cards/ResourceChart";
 
-function Dashboard() {
+function Schedule() {
   const { equipment, campaign, resourceOptions } = useStore();
   const { toast } = useToast();
 
@@ -35,40 +34,32 @@ function Dashboard() {
   const processDetails = calculateProcessDetails(calculatedEquipment);
 
   return (
-    <div className="h-screen w-screen ">
-      <div className="flex flex-col">
-        <Header />
-        <main className="flex-1 overflow-auto p-4">
-          <div
-            className="relative flex-col items-start gap-8 md:flex"
-            x-chunk="dashboard-03-chunk-0"
-          >
-            <div className="w-full grid grid-cols-4 gap-4">
-              {equipment.length > 0 && (
-                <>
-                  <BatchTimeCard details={processDetails} />
-                  <BottleneckCard details={processDetails} />
-                  <CampaignCard details={processDetails} />
-                  <ResourcesCard />
-                </>
-              )}
-              <EquipmentOccupancyChart
-                equipmentWithTiming={calculatedEquipment}
-              />
+    <div>
+      <h1 className="text-2xl font-bold mb-2">Process Schedule</h1>
 
-              {equipment.length > 0 &&
-                resourceOptions.map((option: ResourceOption) => (
-                  <ChartCard
-                    resource={option}
-                    equipment={calculatedEquipment}
-                  />
-                ))}
-            </div>
-          </div>
-        </main>
+      <div
+        className="relative flex-col items-start gap-8 md:flex"
+        x-chunk="dashboard-03-chunk-0"
+      >
+        <div className="w-full grid grid-cols-4 gap-4">
+          {equipment.length > 0 && (
+            <>
+              <BatchTimeCard details={processDetails} />
+              <BottleneckCard details={processDetails} />
+              <CampaignCard details={processDetails} />
+              <ResourcesCard />
+            </>
+          )}
+          <EquipmentOccupancyChart equipmentWithTiming={calculatedEquipment} />
+
+          {equipment.length > 0 &&
+            resourceOptions.map((option: ResourceOption) => (
+              <ChartCard resource={option} equipment={calculatedEquipment} />
+            ))}
+        </div>
       </div>
     </div>
   );
 }
 
-export default Dashboard;
+export default Schedule;

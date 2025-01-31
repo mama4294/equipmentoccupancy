@@ -1,15 +1,16 @@
 import { Toaster } from "./components/ui/toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
-import Dashboard from "./components/Dashboard";
+import Schedule from "./components/Schedule";
 import { DarkModeProvider } from "./components/themes/DarkMode/DarkModeProvider";
 import { ColorThemeProvider } from "./components/themes/ColorTheme/ColorThemeProvider";
+import Home from "./components/Home";
 
 function App() {
   return (
     <DarkModeProvider defaultTheme="light" storageKey="eoc-theme">
       <ColorThemeProvider defaultTheme="slate" storageKey="eoc-theme">
         <TooltipProvider>
-          <Dashboard />
+          <Home />
           <Toaster />
         </TooltipProvider>
       </ColorThemeProvider>
