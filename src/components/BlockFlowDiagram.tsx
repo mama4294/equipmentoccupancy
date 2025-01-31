@@ -14,12 +14,13 @@ import {
   type Connection,
   type NodeTypes,
   MarkerType,
+  BackgroundVariant,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PlusCircle, Trash2 } from "lucide-react";
+import { Menu, PlusCircle, Trash2 } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -29,6 +30,7 @@ import {
 } from "./ui/card";
 import {
   Menubar,
+  MenubarCheckboxItem,
   MenubarContent,
   MenubarItem,
   MenubarMenu,
@@ -70,6 +72,7 @@ export default function BlockFlowDiagram() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [BFDBackground, setBFDBackground] = useState(BackgroundVariant.Dots);
 
   const onConnect = useCallback(
     (params: Edge | Connection) => {
@@ -137,27 +140,52 @@ export default function BlockFlowDiagram() {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div>
-        <h1 className="text-2xl font-bold mb-2">Block Flow Diagram</h1>
-        <div className="space-x-2 mb-2">
-          <Button onClick={() => addNewNode("unitOperation")} className="">
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Unit Operation
-          </Button>
-          <Button onClick={() => addNewNode("inputNode")} variant="secondary">
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Input
-          </Button>
-          <Button onClick={() => addNewNode("outputNode")} variant="secondary">
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Output
-          </Button>
-          <Button
-            onClick={deleteSelectedElements}
-            variant="destructive"
-            className=""
-          >
-            <Trash2 className="mr-2 h-4 w-4" /> Delete Selected
-          </Button>
-        </div>
+      <h1 className="text-2xl font-bold mb-2">Block Flow Diagram</h1>
+      <div className="pb-2 w-auto">
+        <Menubar>
+          <MenubarMenu>
+            <MenubarTrigger>Edit</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onClick={() => addNewNode("unitOperation")}>
+                New Operation
+              </MenubarItem>
+              <MenubarItem onClick={() => addNewNode("inputNode")}>
+                New Input
+              </MenubarItem>
+              <MenubarItem onClick={() => addNewNode("outputNode")}>
+                New Output
+              </MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem onClick={deleteSelectedElements}>Delete</MenubarItem>
+              <MenubarSeparator />
+            </MenubarContent>
+          </MenubarMenu>
+          <MenubarMenu>
+            <MenubarTrigger>View</MenubarTrigger>
+            <MenubarContent>
+              <MenubarCheckboxItem
+                checked={BFDBackground == BackgroundVariant.Dots}
+                onClick={() => setBFDBackground(BackgroundVariant.Dots)}
+              >
+                Dots
+              </MenubarCheckboxItem>
+              <MenubarCheckboxItem
+                checked={BFDBackground == BackgroundVariant.Lines}
+                onClick={() => setBFDBackground(BackgroundVariant.Lines)}
+              >
+                Lines
+              </MenubarCheckboxItem>
+              <MenubarCheckboxItem
+                checked={BFDBackground == BackgroundVariant.Cross}
+                onClick={() => setBFDBackground(BackgroundVariant.Cross)}
+              >
+                Cross
+              </MenubarCheckboxItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
       </div>
+
       <Card className="w-full h-full">
         <div className="w-full h-full">
           <ReactFlow
@@ -171,7 +199,7 @@ export default function BlockFlowDiagram() {
           >
             <Controls />
             <MiniMap />
-            <Background variant={"dots" as const} gap={12} size={1} />
+            <Background variant={BFDBackground} gap={12} size={1} />
           </ReactFlow>
         </div>
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
