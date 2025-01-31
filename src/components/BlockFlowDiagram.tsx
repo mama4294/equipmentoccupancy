@@ -49,6 +49,12 @@ import {
 import UnitOpNode from "./blocks/UnitOpNode";
 import OutputNode from "./blocks/OutputNode";
 import InputNode from "./blocks/InputNode";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 const nodeTypes: NodeTypes = {
   unitOperation: UnitOpNode,
@@ -64,6 +70,10 @@ const initialNodes: Node[] = [
     data: { label: "Reactor", description: "Main reactor" },
   },
 ];
+
+//TODO: add new nodes at cursor location if on screen instead of randomly.
+//TODO: save state
+//TODO: connect operations to equipment.
 
 const initialEdges: Edge[] = [];
 
@@ -188,19 +198,34 @@ export default function BlockFlowDiagram() {
 
       <Card className="w-full h-full">
         <div className="w-full h-full">
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onNodeClick={onNodeClick}
-            nodeTypes={nodeTypes}
-          >
-            <Controls />
-            <MiniMap />
-            <Background variant={BFDBackground} gap={12} size={1} />
-          </ReactFlow>
+          <ContextMenu>
+            <ContextMenuTrigger>
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onConnect={onConnect}
+                onNodeClick={onNodeClick}
+                nodeTypes={nodeTypes}
+              >
+                <Controls />
+                <MiniMap />
+                <Background variant={BFDBackground} gap={12} size={1} />
+              </ReactFlow>
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuItem onClick={() => addNewNode("unitOperation")}>
+                Add Operation
+              </ContextMenuItem>
+              <ContextMenuItem onClick={() => addNewNode("inputNode")}>
+                Add Input
+              </ContextMenuItem>
+              <ContextMenuItem onClick={() => addNewNode("outputNode")}>
+                Add Output
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
         </div>
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
           <DrawerContent>
@@ -212,7 +237,7 @@ export default function BlockFlowDiagram() {
               </DrawerDescription>
             </DrawerHeader>
             {selectedNode && (
-              <div className="py-4 space-y-4">
+              <div className="p-4 space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="node-label">Label</Label>
                   <Input
