@@ -45,12 +45,12 @@ function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-10 flex h-[57px] items-center gap-1 border-b bg-background px-4">
-      <div className="border-b p-2">
+    <header className="sticky top-0 z-10 flex h-[57px] items-center gap-1 border-b bg-background pr-4">
+      <div className="p-3">
         <DropdownMenu>
-          <DropdownMenuTrigger className="">
-            <Button variant={"outline"}>
-              <Menu className="size-5" />
+          <DropdownMenuTrigger>
+            <Button variant={"outline"} size="icon">
+              <Menu className="h-6 w-6" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>

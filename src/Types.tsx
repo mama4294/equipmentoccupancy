@@ -1,9 +1,17 @@
+import { type Node, type Edge } from "@xyflow/react";
+
 export type State = {
   projectTitle: string;
   equipment: Equipment[];
   campaign: Campaign;
   resourceOptions: ResourceOption[];
+  procedures: Node[];
+  streams: Edge[];
 };
+
+export type BFDBlocks = "unitOperation" | "inputNode" | "outputNode";
+
+export type ProcedureData = { label: string; equipment: string };
 
 export type CampaignSchedulingType = "optimized" | "fixed";
 

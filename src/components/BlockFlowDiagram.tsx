@@ -6,28 +6,15 @@ import {
   MiniMap,
   Controls,
   Background,
-  useNodesState,
-  useEdgesState,
-  addEdge,
   type Node,
-  type Edge,
-  type Connection,
   type NodeTypes,
-  MarkerType,
   BackgroundVariant,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Menu, PlusCircle, Trash2 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card } from "./ui/card";
+import { useStore } from "../Store";
 import {
   Menubar,
   MenubarCheckboxItem,
@@ -35,20 +22,18 @@ import {
   MenubarItem,
   MenubarMenu,
   MenubarSeparator,
-  MenubarShortcut,
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
 } from "./ui/drawer";
-import UnitOpNode from "./blocks/UnitOpNode";
-import OutputNode from "./blocks/OutputNode";
-import InputNode from "./blocks/InputNode";
+import UnitOpNode from "./blocks/ProcedureBlock";
+import OutputNode from "./blocks/OutputBlock";
+import InputNode from "./blocks/InputBlock";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -62,91 +47,30 @@ const nodeTypes: NodeTypes = {
   outputNode: OutputNode,
 };
 
-const initialNodes: Node[] = [
-  {
-    id: "1",
-    type: "unitOperation",
-    position: { x: 250, y: 5 },
-    data: { label: "Reactor", description: "Main reactor" },
-  },
-];
-
 //TODO: add new nodes at cursor location if on screen instead of randomly.
-//TODO: save state
+//TODO: Fix on Node change
+//TODO: add edges to state
 //TODO: connect operations to equipment.
 
-const initialEdges: Edge[] = [];
-
 export default function BlockFlowDiagram() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const {
+    procedures,
+    streams,
+    onProceduresChange,
+    onStreamsChange,
+    onConnect,
+    addProcedure,
+    deleteSelectedElements,
+  } = useStore();
+
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [BFDBackground, setBFDBackground] = useState(BackgroundVariant.Dots);
 
-  const onConnect = useCallback(
-    (params: Edge | Connection) => {
-      const newEdge = {
-        ...params,
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          width: 20,
-          height: 20,
-        },
-      };
-      setEdges((eds) => addEdge(newEdge, eds));
-    },
-    [setEdges]
-  );
-
-  const addNewNode = (type: "unitOperation" | "inputNode" | "outputNode") => {
-    const newNode: Node = {
-      id: `${nodes.length + 1}`,
-      type,
-      position: { x: Math.random() * 500, y: Math.random() * 300 },
-      data: {
-        label: `New ${type.charAt(0).toUpperCase() + type.slice(1)}`,
-        description: type === "unitOperation" ? "Description" : undefined,
-      },
-    };
-    setNodes((nds) => nds.concat(newNode));
-  };
-
-  const updateNodeData = (
-    id: string,
-    newData: { label: string; description?: string }
-  ) => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === id) {
-          node.data = { ...node.data, ...newData };
-        }
-        return node;
-      })
-    );
-    setSelectedNode((prevNode) =>
-      prevNode && prevNode.id === id
-        ? { ...prevNode, data: { ...prevNode.data, ...newData } }
-        : prevNode
-    );
-  };
-
-  const deleteSelectedElements = () => {
-    setNodes((nds) => nds.filter((node) => !node.selected));
-    setEdges((eds) => eds.filter((edge) => !edge.selected));
-    setSelectedNode(null);
-    setIsDrawerOpen(false);
-  };
-
-  const onNodeClick = (_: React.MouseEvent, node: Node) => {
-    setSelectedNode(node);
+  const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
+    setSelectedNodeId(node.id);
     setIsDrawerOpen(true);
-  };
-
-  const closeDrawer = () => {
-    setIsDrawerOpen(false);
-    setSelectedNode(null);
-  };
+  }, []);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -156,13 +80,13 @@ export default function BlockFlowDiagram() {
           <MenubarMenu>
             <MenubarTrigger>Edit</MenubarTrigger>
             <MenubarContent>
-              <MenubarItem onClick={() => addNewNode("unitOperation")}>
+              <MenubarItem onClick={() => addProcedure("unitOperation")}>
                 New Operation
               </MenubarItem>
-              <MenubarItem onClick={() => addNewNode("inputNode")}>
+              <MenubarItem onClick={() => addProcedure("inputNode")}>
                 New Input
               </MenubarItem>
-              <MenubarItem onClick={() => addNewNode("outputNode")}>
+              <MenubarItem onClick={() => addProcedure("outputNode")}>
                 New Output
               </MenubarItem>
               <MenubarSeparator />
@@ -201,10 +125,10 @@ export default function BlockFlowDiagram() {
           <ContextMenu>
             <ContextMenuTrigger>
               <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
+                nodes={procedures}
+                edges={streams}
+                onNodesChange={onProceduresChange}
+                onEdgesChange={onStreamsChange}
                 onConnect={onConnect}
                 onNodeClick={onNodeClick}
                 nodeTypes={nodeTypes}
@@ -215,63 +139,86 @@ export default function BlockFlowDiagram() {
               </ReactFlow>
             </ContextMenuTrigger>
             <ContextMenuContent>
-              <ContextMenuItem onClick={() => addNewNode("unitOperation")}>
+              <ContextMenuItem onClick={() => addProcedure("unitOperation")}>
                 Add Operation
               </ContextMenuItem>
-              <ContextMenuItem onClick={() => addNewNode("inputNode")}>
+              <ContextMenuItem onClick={() => addProcedure("inputNode")}>
                 Add Input
               </ContextMenuItem>
-              <ContextMenuItem onClick={() => addNewNode("outputNode")}>
+              <ContextMenuItem onClick={() => addProcedure("outputNode")}>
                 Add Output
               </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
+          <EditProcedureDrawer
+            open={isDrawerOpen}
+            onOpenChange={setIsDrawerOpen}
+            selectedNode={selectedNodeId}
+          />
         </div>
-        <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-          <DrawerContent>
-            <DrawerHeader>
-              <DrawerTitle>Edit Unit Operation</DrawerTitle>
-              <DrawerDescription>
-                Make changes to the selected unit operation here. Click save
-                when you're done.
-              </DrawerDescription>
-            </DrawerHeader>
-            {selectedNode && (
-              <div className="p-4 space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="node-label">Label</Label>
-                  <Input
-                    id="node-label"
-                    value={selectedNode.data.label}
-                    onChange={(e) =>
-                      updateNodeData(selectedNode.id, {
-                        ...selectedNode.data,
-                        label: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="node-description">Description</Label>
-                  <Input
-                    id="node-description"
-                    value={selectedNode.data.description || ""}
-                    onChange={(e) =>
-                      updateNodeData(selectedNode.id, {
-                        label: selectedNode.data.label,
-                        description: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <Button onClick={closeDrawer} className="w-full">
-                  Save Changes
-                </Button>
-              </div>
-            )}
-          </DrawerContent>
-        </Drawer>
       </Card>
     </div>
   );
 }
+
+const EditProcedureDrawer = ({
+  open,
+  onOpenChange,
+  selectedNodeId,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  selectedNodeId: string | null;
+}) => {
+  const { updateProcedureData, procedures } = useStore();
+
+  if (!selectedNodeId) return;
+
+  const selectedNode = procedures.find((p) => p.id == selectedNodeId);
+  if (!selectedNode) return;
+
+  const { label, equipment } = selectedNode.data;
+
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>Edit Unit Operation</DrawerTitle>
+          <DrawerDescription>
+            Make changes to the selected unit operation here. Click save when
+            you're done.
+          </DrawerDescription>
+        </DrawerHeader>
+
+        <div className="p-4 space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="node-label">Label</Label>
+            <Input
+              id="node-label"
+              value={label}
+              onChange={(e) =>
+                updateProcedureData(selectedNodeId, {
+                  ...selectedNode.data,
+                  label: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="node-description">Equipment</Label>
+            <Input
+              id="node-tag"
+              value={equipment}
+              onChange={(e) =>
+                updateProcedureData(selectedNodeId, {
+                  ...selectedNode.data,
+                  equipment: e.target.value,
+                })
+              }
+            />
+          </div>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  );
+};

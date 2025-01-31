@@ -1,16 +1,21 @@
 import { useMemo } from "react";
 import EquipmentOccupancyChart from "./EquipmentOccupancyChart";
-import { useStore } from "../Store";
 import { calculateProcessDetails, calculateTiming } from "../utils/ganttLogic";
 import { useToast } from "../hooks/use-toast";
-import { EquipmentWithTiming, ResourceOption } from "@/Types";
+import {
+  Campaign,
+  Equipment,
+  EquipmentWithTiming,
+  ResourceOption,
+} from "@/Types";
 import BottleneckCard from "./cards/BottleneckCard";
 import BatchTimeCard from "./cards/BatchTimeCard";
 import CampaignCard from "./cards/CampaignCard";
 import ResourcesCard from "./cards/ResourcesCard";
 import ChartCard from "./cards/ResourceChart";
+import { useStore } from "@/Store";
 
-function Schedule() {
+const Schedule = () => {
   const { equipment, campaign, resourceOptions } = useStore();
   const { toast } = useToast();
 
@@ -60,6 +65,6 @@ function Schedule() {
       </div>
     </div>
   );
-}
+};
 
 export default Schedule;

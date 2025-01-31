@@ -2,9 +2,11 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { saveToFile, openFile } from "./utils/FileSystem";
 import {
+  BFDBlocks,
   CampaignSchedulingType,
   DurationUnit,
   Equipment,
+  ProcedureData,
   ResourceOption,
   State,
 } from "./Types";
@@ -13,6 +15,20 @@ import {
   MAX_BATCHES_PER_CAMPAIGN,
   MIN_BATCHES_PER_CAMPAIGN,
 } from "./utils/constants";
+import {
+  applyEdgeChanges,
+  applyNodeChanges,
+  Connection,
+  addEdge,
+  Edge,
+  EdgeChange,
+  Node,
+  NodeChange,
+  OnConnect,
+  OnEdgesChange,
+  OnNodesChange,
+  MarkerType,
+} from "@xyflow/react";
 
 //TODO: On deleteResourceOption, delete all equipment resources of the same type.
 
@@ -23,6 +39,15 @@ import {
 const initialState: State = {
   projectTitle: "Untitled Project",
   equipment: [],
+  procedures: [
+    {
+      id: "1",
+      type: "unitOperation",
+      position: { x: 250, y: 5 },
+      data: { label: "Fermenter", equipment: "3F Fermenter" },
+    },
+  ],
+  streams: [],
   campaign: {
     quantity: 1,
     schedulingType: "optimized",
@@ -43,6 +68,11 @@ type Action = {
   saveAsState: () => void;
   loadState: () => void;
   resetState: () => void;
+  onProceduresChange: OnNodesChange;
+  onStreamsChange: OnEdgesChange;
+  onConnect: OnConnect;
+  addProcedure: (type: BFDBlocks) => void;
+  updateProcedureData: (id: string, data: ProcedureData) => void;
   addEquipment: (procedure: Equipment) => void;
   updateEquipment: (procedure: Equipment) => void;
   deleteEquipment: (procedure: Equipment) => void;
@@ -53,6 +83,7 @@ type Action = {
   updateCampaignSchedulingType: (
     schedulingType: CampaignSchedulingType
   ) => void;
+  deleteSelectedElements: () => void;
   updateCampaignFrequency: (frequency: number) => void;
   updateCampaignFrequencyUnit: (frequencyUnit: DurationUnit) => void;
   addResourceOption: (resource: ResourceOption) => void;
@@ -62,7 +93,7 @@ type Action = {
 
 export const useStore = create<State & Action>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...initialState,
       updateProjectTitle: (projectTitle: string) =>
         set(() => ({ projectTitle: projectTitle })),
@@ -90,6 +121,72 @@ export const useStore = create<State & Action>()(
         set(initialState);
         window.handle = undefined;
       },
+      onProceduresChange: (changes: NodeChange[]) => {
+        set({
+          procedures: applyNodeChanges(changes, get().procedures),
+        });
+      },
+      onStreamsChange: (changes: EdgeChange[]) => {
+        set({
+          streams: applyEdgeChanges(changes, get().streams),
+        });
+      },
+
+      onConnect: (connection: Connection) => {
+        set({
+          streams: addEdge(
+            {
+              ...connection,
+              markerEnd: {
+                type: MarkerType.ArrowClosed,
+                width: 30,
+                height: 30,
+              },
+            },
+            get().streams
+          ),
+        });
+      },
+      addProcedure: (type: BFDBlocks) => {
+        const newNode: Node = {
+          id: `${get().procedures.length + 1}`,
+          type,
+          position: { x: Math.random() * 500, y: Math.random() * 300 },
+          data: {
+            label: `${type.charAt(0).toUpperCase() + type.slice(1)}`,
+            tag: "",
+          },
+        };
+        set({ procedures: [...get().procedures, newNode] });
+      },
+
+      updateProcedureData: (
+        id: string,
+        newData: { label: string; description?: string }
+      ) => {
+        set({
+          procedures: get().procedures.map((node: Node) => {
+            if (node.id === id) {
+              node.data = { ...node.data, ...newData };
+            }
+            return node;
+          }),
+        });
+      },
+
+      deleteSelectedElements: () => {
+        set({
+          procedures: get().procedures.filter((node: Node) => !node.selected),
+          streams: get().streams.filter((edge: Edge) => !edge.selected),
+        });
+      },
+
+      updateOperation: (operation: Node) =>
+        set((state) => ({
+          procedures: state.procedures.map((p) =>
+            p.id === operation.id ? operation : p
+          ),
+        })),
       addEquipment: (equipment: Equipment) =>
         set((state) => ({ equipment: [...state.equipment, equipment] })),
       updateEquipment: (equipment: Equipment) =>
