@@ -142,15 +142,8 @@ export const useStore = create<State & Action>()(
               ...connection,
               type: "customEdge",
               label: "",
-              // style: {
-              //   strokeWidth: 2,
-              //   stroke: "#FF0072",
-              // },
               markerEnd: {
                 type: MarkerType.ArrowClosed,
-                // color: "#FF0072",
-                // width: 30,
-                // height: 30,
               },
             },
             get().streams
@@ -171,14 +164,14 @@ export const useStore = create<State & Action>()(
       },
 
       updateBlockData: (id: string, newData: BlockData) => {
-        set({
-          blocks: get().blocks.map((node: Block) => {
+        set((state) => ({
+          blocks: state.blocks.map((node: Block) => {
             if (node.id === id) {
-              node.data = { ...node.data, ...newData };
+              return { ...node, data: { ...node.data, ...newData } };
             }
             return node;
           }),
-        });
+        }));
       },
 
       updateStreamLabel: (id: string, label: string) => {
