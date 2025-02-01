@@ -29,6 +29,7 @@ import {
   OnEdgesChange,
   OnNodesChange,
   MarkerType,
+  XYPosition,
 } from "@xyflow/react";
 
 //TODO: On deleteResourceOption, delete all equipment resources of the same type.
@@ -72,7 +73,7 @@ type Action = {
   onBlocksChange: OnNodesChange;
   onStreamsChange: OnEdgesChange;
   onConnect: OnConnect;
-  addBlock: (type: BFDBlocks) => void;
+  addBlock: (type: BFDBlocks, position: XYPosition) => void;
   updateBlockData: (id: string, data: BlockData) => void;
   addEquipment: (procedure: Equipment) => void;
   updateEquipment: (procedure: Equipment) => void;
@@ -148,11 +149,11 @@ export const useStore = create<State & Action>()(
           ),
         });
       },
-      addBlock: (type: BFDBlocks) => {
+      addBlock: (type: BFDBlocks, position: XYPosition) => {
         const newNode: Block = {
           id: `${get().blocks.length + 1}`,
           type,
-          position: { x: Math.random() * 500, y: Math.random() * 300 },
+          position,
           data: {
             label: `${type.charAt(0).toUpperCase() + type.slice(1)}`,
             equipment: "",

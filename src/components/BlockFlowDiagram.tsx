@@ -39,6 +39,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { BFDBlocks as BlockType } from "@/Types";
 
 const nodeTypes: NodeTypes = {
   unitOperation: UnitOpNode,
@@ -46,7 +47,6 @@ const nodeTypes: NodeTypes = {
   outputNode: OutputNode,
 };
 
-//TODO: add new nodes at cursor location if on screen instead of randomly.
 //TODO: highlight selected block
 //TODO: connect operations to equipment.
 //TODO: Fix night mode MiniMap and controls
@@ -79,6 +79,11 @@ export default function BlockFlowDiagram() {
     setIsStreamDrawerOpen(true);
   }, []);
 
+  const onAddBlock = (event: React.MouseEvent, type: BlockType) => {
+    const { clientX, clientY } = event;
+    addBlock(type, { x: clientX, y: clientY });
+  };
+
   return (
     <div className="w-full h-full flex flex-col">
       <h1 className="text-2xl font-bold mb-2">Block Flow Diagram</h1>
@@ -87,13 +92,13 @@ export default function BlockFlowDiagram() {
           <MenubarMenu>
             <MenubarTrigger>Edit</MenubarTrigger>
             <MenubarContent>
-              <MenubarItem onClick={() => addBlock("unitOperation")}>
+              <MenubarItem onClick={(e) => onAddBlock(e, "unitOperation")}>
                 New Operation
               </MenubarItem>
-              <MenubarItem onClick={() => addBlock("inputNode")}>
+              <MenubarItem onClick={(e) => onAddBlock(e, "inputNode")}>
                 New Input
               </MenubarItem>
-              <MenubarItem onClick={() => addBlock("outputNode")}>
+              <MenubarItem onClick={(e) => onAddBlock(e, "outputNode")}>
                 New Output
               </MenubarItem>
               <MenubarSeparator />
@@ -147,13 +152,13 @@ export default function BlockFlowDiagram() {
               </ReactFlow>
             </ContextMenuTrigger>
             <ContextMenuContent>
-              <ContextMenuItem onClick={() => addBlock("unitOperation")}>
+              <ContextMenuItem onClick={(e) => onAddBlock(e, "unitOperation")}>
                 Add Operation
               </ContextMenuItem>
-              <ContextMenuItem onClick={() => addBlock("inputNode")}>
+              <ContextMenuItem onClick={(e) => onAddBlock(e, "inputNode")}>
                 Add Input
               </ContextMenuItem>
-              <ContextMenuItem onClick={() => addBlock("outputNode")}>
+              <ContextMenuItem onClick={(e) => onAddBlock(e, "outputNode")}>
                 Add Output
               </ContextMenuItem>
             </ContextMenuContent>
