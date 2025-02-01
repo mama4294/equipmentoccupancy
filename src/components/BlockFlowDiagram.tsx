@@ -9,6 +9,7 @@ import {
   type Node,
   type NodeTypes,
   BackgroundVariant,
+  Edge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Input } from "@/components/ui/input";
@@ -48,9 +49,9 @@ const nodeTypes: NodeTypes = {
 };
 
 //TODO: add new nodes at cursor location if on screen instead of randomly.
-//TODO: Fix on Node change
-//TODO: add edges to state
+//TODO: highlight selected block
 //TODO: connect operations to equipment.
+//TODO: Fix night mode MiniMap and controls
 
 export default function BlockFlowDiagram() {
   const {
@@ -64,12 +65,20 @@ export default function BlockFlowDiagram() {
   } = useStore();
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isProcedureDrawerOpen, setIsProcedureDrawerOpen] = useState(false);
+  const [isStreamDrawerOpen, setIsStreamDrawerOpen] = useState(false);
   const [BFDBackground, setBFDBackground] = useState(BackgroundVariant.Dots);
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
-    setIsDrawerOpen(true);
+    setIsStreamDrawerOpen(false);
+    setIsProcedureDrawerOpen(true);
+  }, []);
+
+  const onEdgeClick = useCallback((_: React.MouseEvent, edge: Edge) => {
+    console.log(edge);
+    setIsProcedureDrawerOpen(false);
+    setIsStreamDrawerOpen(true);
   }, []);
 
   return (
@@ -131,6 +140,7 @@ export default function BlockFlowDiagram() {
                 onEdgesChange={onStreamsChange}
                 onConnect={onConnect}
                 onNodeClick={onNodeClick}
+                onEdgeClick={onEdgeClick}
                 nodeTypes={nodeTypes}
               >
                 <Controls />
@@ -151,9 +161,13 @@ export default function BlockFlowDiagram() {
             </ContextMenuContent>
           </ContextMenu>
           <EditProcedureDrawer
-            open={isDrawerOpen}
-            onOpenChange={setIsDrawerOpen}
-            selectedNode={selectedNodeId}
+            open={isProcedureDrawerOpen}
+            onOpenChange={setIsProcedureDrawerOpen}
+            selectedNodeId={selectedNodeId}
+          />
+          <StreamDataDrawer
+            open={isStreamDrawerOpen}
+            onOpenChange={setIsStreamDrawerOpen}
           />
         </div>
       </Card>
@@ -172,6 +186,8 @@ const EditProcedureDrawer = ({
 }) => {
   const { updateProcedureData, procedures } = useStore();
 
+  console.log("selectedNodeId:", selectedNodeId);
+
   if (!selectedNodeId) return;
 
   const selectedNode = procedures.find((p) => p.id == selectedNodeId);
@@ -183,10 +199,9 @@ const EditProcedureDrawer = ({
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Edit Unit Operation</DrawerTitle>
+          <DrawerTitle>Edit Procedure</DrawerTitle>
           <DrawerDescription>
-            Make changes to the selected unit operation here. Click save when
-            you're done.
+            Make changes to the selected procedure here.
           </DrawerDescription>
         </DrawerHeader>
 
@@ -218,6 +233,25 @@ const EditProcedureDrawer = ({
             />
           </div>
         </div>
+      </DrawerContent>
+    </Drawer>
+  );
+};
+
+const StreamDataDrawer = ({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) => {
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>Stream Data</DrawerTitle>
+          <DrawerDescription>See stream data here</DrawerDescription>
+        </DrawerHeader>
       </DrawerContent>
     </Drawer>
   );
