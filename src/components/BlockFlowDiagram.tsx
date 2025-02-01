@@ -42,6 +42,10 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { NodeTypes as BlockType, Stream } from "@/Types";
+import {
+  DarkModeProvider,
+  useDarkModeTheme,
+} from "./themes/DarkMode/DarkModeProvider";
 
 const nodeTypes: NodeTypes = {
   unitOperation: UnitOpNode,
@@ -55,9 +59,10 @@ const edgeTypes: EdgeTypes = {
 
 //TODO: highlight selected block
 //TODO: connect operations to equipment.
-//TODO: Fix night mode MiniMap and controls
 
 export default function BlockFlowDiagram() {
+  const { theme } = useDarkModeTheme();
+
   const {
     blocks: procedures,
     streams,
@@ -153,6 +158,7 @@ export default function BlockFlowDiagram() {
                 onEdgeClick={onEdgeClick}
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
+                colorMode={theme}
               >
                 <Controls />
                 <MiniMap />

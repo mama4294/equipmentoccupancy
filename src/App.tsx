@@ -1,6 +1,5 @@
 import { Toaster } from "./components/ui/toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
-import Schedule from "./components/Schedule";
 import { DarkModeProvider } from "./components/themes/DarkMode/DarkModeProvider";
 import { ColorThemeProvider } from "./components/themes/ColorTheme/ColorThemeProvider";
 import Home from "./components/Home";
