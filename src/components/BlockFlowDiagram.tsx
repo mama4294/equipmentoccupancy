@@ -39,7 +39,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { BFDBlocks as BlockType } from "@/Types";
+import { BFDBlocks as BlockType, Stream } from "@/Types";
 
 const nodeTypes: NodeTypes = {
   unitOperation: UnitOpNode,
@@ -63,6 +63,7 @@ export default function BlockFlowDiagram() {
   } = useStore();
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [selectedStreamId, setSelectedStreamId] = useState<string | null>(null);
   const [isProcedureDrawerOpen, setIsProcedureDrawerOpen] = useState(false);
   const [isStreamDrawerOpen, setIsStreamDrawerOpen] = useState(false);
   const [BFDBackground, setBFDBackground] = useState(BackgroundVariant.Dots);
@@ -74,7 +75,7 @@ export default function BlockFlowDiagram() {
   }, []);
 
   const onEdgeClick = useCallback((_: React.MouseEvent, edge: Edge) => {
-    console.log(edge);
+    setSelectedStreamId(edge.id);
     setIsProcedureDrawerOpen(false);
     setIsStreamDrawerOpen(true);
   }, []);
@@ -171,6 +172,7 @@ export default function BlockFlowDiagram() {
           <StreamDataDrawer
             open={isStreamDrawerOpen}
             onOpenChange={setIsStreamDrawerOpen}
+            selectedEdgeId={selectedStreamId}
           />
         </div>
       </Card>
@@ -187,14 +189,11 @@ const EditProcedureDrawer = ({
   onOpenChange: (open: boolean) => void;
   selectedNodeId: string | null;
 }) => {
-  const { updateBlockData: updateProcedureData, blocks: procedures } =
-    useStore();
-
-  console.log("selectedNodeId:", selectedNodeId);
+  const { updateBlockData, blocks } = useStore();
 
   if (!selectedNodeId) return;
 
-  const selectedNode = procedures.find((p) => p.id == selectedNodeId);
+  const selectedNode = blocks.find((p) => p.id == selectedNodeId);
   if (!selectedNode) return;
 
   const { label, equipment } = selectedNode.data;
@@ -216,7 +215,7 @@ const EditProcedureDrawer = ({
               id="node-label"
               value={label}
               onChange={(e) =>
-                updateProcedureData(selectedNodeId, {
+                updateBlockData(selectedNodeId, {
                   ...selectedNode.data,
                   label: e.target.value,
                 })
@@ -229,7 +228,7 @@ const EditProcedureDrawer = ({
               id="node-tag"
               value={equipment}
               onChange={(e) =>
-                updateProcedureData(selectedNodeId, {
+                updateBlockData(selectedNodeId, {
                   ...selectedNode.data,
                   equipment: e.target.value,
                 })
@@ -245,10 +244,18 @@ const EditProcedureDrawer = ({
 const StreamDataDrawer = ({
   open,
   onOpenChange,
+  selectedEdgeId,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  selectedEdgeId: string | null;
 }) => {
+  const { updateStreamLabel, streams } = useStore();
+
+  if (!selectedEdgeId) return;
+  const selectedEdge = streams.find((p: Stream) => p.id == selectedEdgeId);
+  if (!selectedEdge) return;
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
@@ -256,6 +263,18 @@ const StreamDataDrawer = ({
           <DrawerTitle>Stream Data</DrawerTitle>
           <DrawerDescription>See stream data here</DrawerDescription>
         </DrawerHeader>
+        <div className="p-4 space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="node-description">Label</Label>
+            <Input
+              id="edge-label"
+              value={selectedEdge.label}
+              onChange={(e) =>
+                updateStreamLabel(selectedEdgeId, e.target.value)
+              }
+            />
+          </div>
+        </div>
       </DrawerContent>
     </Drawer>
   );

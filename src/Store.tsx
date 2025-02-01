@@ -75,6 +75,7 @@ type Action = {
   onConnect: OnConnect;
   addBlock: (type: BFDBlocks, position: XYPosition) => void;
   updateBlockData: (id: string, data: BlockData) => void;
+  updateStreamLabel: (id: string, label: string) => void;
   addEquipment: (procedure: Equipment) => void;
   updateEquipment: (procedure: Equipment) => void;
   deleteEquipment: (procedure: Equipment) => void;
@@ -139,10 +140,15 @@ export const useStore = create<State & Action>()(
           streams: addEdge(
             {
               ...connection,
+              style: {
+                strokeWidth: 2,
+                stroke: "#FF0072",
+              },
               markerEnd: {
                 type: MarkerType.ArrowClosed,
-                width: 30,
-                height: 30,
+                color: "#FF0072",
+                // width: 30,
+                // height: 30,
               },
             },
             get().streams
@@ -169,6 +175,21 @@ export const useStore = create<State & Action>()(
               node.data = { ...node.data, ...newData };
             }
             return node;
+          }),
+        });
+      },
+
+      updateStreamLabel: (id: string, label: string) => {
+        set({
+          streams: get().streams.map((edge) => {
+            if (edge.id === id) {
+              return {
+                ...edge,
+                label: label as string,
+                labelStyle: { fill: "black" }, // Optional: add styling
+              };
+            }
+            return edge;
           }),
         });
       },

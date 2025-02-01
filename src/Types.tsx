@@ -6,9 +6,12 @@ export type State = {
   campaign: Campaign;
   resourceOptions: ResourceOption[];
   blocks: Block[];
-  streams: Edge[];
+  streams: Stream[];
 };
 
+export interface Stream extends Edge {
+  label?: string;
+}
 export type BlockData = { label: string; equipment: string };
 export type Block = Node<BlockData>;
 
