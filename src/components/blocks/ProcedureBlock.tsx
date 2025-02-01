@@ -1,8 +1,8 @@
 import { memo } from "react";
 import { Handle, Position } from "@xyflow/react";
-import { ProcedureData } from "@/Types";
+import { BlockData } from "@/Types";
 
-function UnitOperationNode({ data }: { data: ProcedureData }) {
+function UnitOperationNode({ data }: { data: BlockData }) {
   return (
     <div className="px-4 py-2 shadow-md rounded-md border-2 border-primary bg-background">
       <Handle type="target" position={Position.Left} className="w-3 h-3" />

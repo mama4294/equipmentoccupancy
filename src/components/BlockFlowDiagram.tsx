@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useCallback } from "react";
 import {
   ReactFlow,
@@ -55,12 +53,12 @@ const nodeTypes: NodeTypes = {
 
 export default function BlockFlowDiagram() {
   const {
-    procedures,
+    blocks: procedures,
     streams,
-    onProceduresChange,
+    onBlocksChange,
     onStreamsChange,
     onConnect,
-    addProcedure,
+    addBlock,
     deleteSelectedElements,
   } = useStore();
 
@@ -89,13 +87,13 @@ export default function BlockFlowDiagram() {
           <MenubarMenu>
             <MenubarTrigger>Edit</MenubarTrigger>
             <MenubarContent>
-              <MenubarItem onClick={() => addProcedure("unitOperation")}>
+              <MenubarItem onClick={() => addBlock("unitOperation")}>
                 New Operation
               </MenubarItem>
-              <MenubarItem onClick={() => addProcedure("inputNode")}>
+              <MenubarItem onClick={() => addBlock("inputNode")}>
                 New Input
               </MenubarItem>
-              <MenubarItem onClick={() => addProcedure("outputNode")}>
+              <MenubarItem onClick={() => addBlock("outputNode")}>
                 New Output
               </MenubarItem>
               <MenubarSeparator />
@@ -136,7 +134,7 @@ export default function BlockFlowDiagram() {
               <ReactFlow
                 nodes={procedures}
                 edges={streams}
-                onNodesChange={onProceduresChange}
+                onNodesChange={onBlocksChange}
                 onEdgesChange={onStreamsChange}
                 onConnect={onConnect}
                 onNodeClick={onNodeClick}
@@ -149,13 +147,13 @@ export default function BlockFlowDiagram() {
               </ReactFlow>
             </ContextMenuTrigger>
             <ContextMenuContent>
-              <ContextMenuItem onClick={() => addProcedure("unitOperation")}>
+              <ContextMenuItem onClick={() => addBlock("unitOperation")}>
                 Add Operation
               </ContextMenuItem>
-              <ContextMenuItem onClick={() => addProcedure("inputNode")}>
+              <ContextMenuItem onClick={() => addBlock("inputNode")}>
                 Add Input
               </ContextMenuItem>
-              <ContextMenuItem onClick={() => addProcedure("outputNode")}>
+              <ContextMenuItem onClick={() => addBlock("outputNode")}>
                 Add Output
               </ContextMenuItem>
             </ContextMenuContent>
@@ -184,7 +182,8 @@ const EditProcedureDrawer = ({
   onOpenChange: (open: boolean) => void;
   selectedNodeId: string | null;
 }) => {
-  const { updateProcedureData, procedures } = useStore();
+  const { updateBlockData: updateProcedureData, blocks: procedures } =
+    useStore();
 
   console.log("selectedNodeId:", selectedNodeId);
 

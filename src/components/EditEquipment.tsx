@@ -27,7 +27,7 @@ import { useStore } from "../Store";
 
 import {
   DurationUnit,
-  Operation,
+  Block,
   PredecessorRelation,
   Equipment,
   durationOptions,
@@ -64,7 +64,7 @@ const EditProcedure = ({
     resourceOptions,
   } = useStore();
 
-  const initialOperation: Operation = {
+  const initialOperation: Block = {
     id: uuidv4(),
     name: "",
     duration: 1,
@@ -106,7 +106,7 @@ const EditProcedure = ({
 
   const handleOperationChange = (
     id: string,
-    field: keyof Operation,
+    field: keyof Block,
     value: any
   ) => {
     setEquipment((prev) => ({

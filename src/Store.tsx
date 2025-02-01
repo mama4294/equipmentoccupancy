@@ -6,8 +6,8 @@ import {
   CampaignSchedulingType,
   DurationUnit,
   Equipment,
-  Procedure,
-  ProcedureData,
+  Block,
+  BlockData,
   ResourceOption,
   State,
 } from "./Types";
@@ -40,7 +40,7 @@ import {
 const initialState: State = {
   projectTitle: "Untitled Project",
   equipment: [],
-  procedures: [
+  blocks: [
     {
       id: "1",
       type: "unitOperation",
@@ -69,11 +69,11 @@ type Action = {
   saveAsState: () => void;
   loadState: () => void;
   resetState: () => void;
-  onProceduresChange: OnNodesChange;
+  onBlocksChange: OnNodesChange;
   onStreamsChange: OnEdgesChange;
   onConnect: OnConnect;
-  addProcedure: (type: BFDBlocks) => void;
-  updateProcedureData: (id: string, data: ProcedureData) => void;
+  addBlock: (type: BFDBlocks) => void;
+  updateBlockData: (id: string, data: BlockData) => void;
   addEquipment: (procedure: Equipment) => void;
   updateEquipment: (procedure: Equipment) => void;
   deleteEquipment: (procedure: Equipment) => void;
@@ -122,12 +122,9 @@ export const useStore = create<State & Action>()(
         set(initialState);
         window.handle = undefined;
       },
-      onProceduresChange: (changes: NodeChange[]) => {
+      onBlocksChange: (changes: NodeChange[]) => {
         set({
-          procedures: applyNodeChanges(
-            changes,
-            get().procedures
-          ) as Procedure[],
+          blocks: applyNodeChanges(changes, get().blocks) as Block[],
         });
       },
       onStreamsChange: (changes: EdgeChange[]) => {
@@ -151,9 +148,9 @@ export const useStore = create<State & Action>()(
           ),
         });
       },
-      addProcedure: (type: BFDBlocks) => {
-        const newNode: Procedure = {
-          id: `${get().procedures.length + 1}`,
+      addBlock: (type: BFDBlocks) => {
+        const newNode: Block = {
+          id: `${get().blocks.length + 1}`,
           type,
           position: { x: Math.random() * 500, y: Math.random() * 300 },
           data: {
@@ -161,12 +158,12 @@ export const useStore = create<State & Action>()(
             equipment: "",
           },
         };
-        set({ procedures: [...get().procedures, newNode] });
+        set({ blocks: [...get().blocks, newNode] });
       },
 
-      updateProcedureData: (id: string, newData: ProcedureData) => {
+      updateBlockData: (id: string, newData: BlockData) => {
         set({
-          procedures: get().procedures.map((node: Procedure) => {
+          blocks: get().blocks.map((node: Block) => {
             if (node.id === id) {
               node.data = { ...node.data, ...newData };
             }
@@ -177,14 +174,14 @@ export const useStore = create<State & Action>()(
 
       deleteSelectedElements: () => {
         set({
-          procedures: get().procedures.filter((node: Node) => !node.selected),
+          blocks: get().blocks.filter((node: Node) => !node.selected),
           streams: get().streams.filter((edge: Edge) => !edge.selected),
         });
       },
 
-      updateProcedure: (procedure: Procedure) =>
+      updateProcedure: (procedure: Block) =>
         set((state) => ({
-          procedures: state.procedures.map((p) =>
+          blocks: state.blocks.map((p) =>
             p.id === procedure.id ? procedure : p
           ),
         })),

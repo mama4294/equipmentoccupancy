@@ -5,12 +5,12 @@ export type State = {
   equipment: Equipment[];
   campaign: Campaign;
   resourceOptions: ResourceOption[];
-  procedures: Procedure[];
+  blocks: Block[];
   streams: Edge[];
 };
 
-export type ProcedureData = { label: string; equipment: string };
-export type Procedure = Node<ProcedureData>;
+export type BlockData = { label: string; equipment: string };
+export type Block = Node<BlockData>;
 
 export type BFDBlocks = "unitOperation" | "inputNode" | "outputNode";
 
@@ -66,10 +66,10 @@ export interface Operation {
 export type Equipment = {
   id: string;
   name: string;
-  operations: Operation[];
+  operations: Block[];
 };
 
-export type OperationWithTiming = Operation & {
+export type OperationWithTiming = Block & {
   start: number;
   end: number;
   batchNumber: number;

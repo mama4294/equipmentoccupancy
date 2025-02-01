@@ -1,6 +1,6 @@
 import {
   DurationUnit,
-  Operation,
+  Block,
   Equipment,
   Campaign,
   EquipmentWithTiming,
@@ -19,7 +19,7 @@ export const calculateTiming = (
     JSON.stringify(equipment)
   ).map((eq: Equipment) => ({
     ...eq,
-    operations: eq.operations.map((operation: Operation) => ({
+    operations: eq.operations.map((operation: Block) => ({
       ...operation,
       start: 0,
       end: 0,
@@ -30,7 +30,7 @@ export const calculateTiming = (
   // Create a map to store all operations with initial start and end times
   const operationsMap = new Map<
     string,
-    Operation & { start: number; end: number; batchNumber: number }
+    Block & { start: number; end: number; batchNumber: number }
   >();
 
   // Populate the map with all operations from all equipment
@@ -42,7 +42,7 @@ export const calculateTiming = (
 
   // Recursive function to calculate timing for a single operation
   const calculateOperationTiming = (
-    operation: Operation & { start: number; end: number; batchNumber: number }
+    operation: Block & { start: number; end: number; batchNumber: number }
   ): void => {
     // If timing is already calculated, return
     if (operation.start !== 0 && operation.end !== 0) return;
@@ -142,7 +142,7 @@ export const calculateTiming = (
       const batchOffset = batchIndex * offset;
 
       const batchOperations = multipleBatches[i].operations.map(
-        (op: Operation & { start: number; end: number }) => ({
+        (op: Block & { start: number; end: number }) => ({
           ...op,
           id: `${op.id}-batch${batchIndex + 1}`,
           start: op.start + batchOffset,
