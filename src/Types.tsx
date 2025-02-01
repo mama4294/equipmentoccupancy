@@ -12,10 +12,12 @@ export type State = {
 export interface Stream extends Edge {
   label?: string;
 }
+export type EdgeTypes = "customEdge";
+
 export type BlockData = { label: string; equipment: string };
 export type Block = Node<BlockData>;
 
-export type BFDBlocks = "unitOperation" | "inputNode" | "outputNode";
+export type NodeTypes = "unitOperation" | "inputNode" | "outputNode";
 
 export type CampaignSchedulingType = "optimized" | "fixed";
 

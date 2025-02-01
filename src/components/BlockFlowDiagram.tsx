@@ -8,6 +8,7 @@ import {
   type NodeTypes,
   BackgroundVariant,
   Edge,
+  EdgeTypes,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Input } from "@/components/ui/input";
@@ -33,18 +34,23 @@ import {
 import UnitOpNode from "./blocks/ProcedureBlock";
 import OutputNode from "./blocks/OutputBlock";
 import InputNode from "./blocks/InputBlock";
+import CustomEdge from "./blocks/StreamEdge";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { BFDBlocks as BlockType, Stream } from "@/Types";
+import { NodeTypes as BlockType, Stream } from "@/Types";
 
 const nodeTypes: NodeTypes = {
   unitOperation: UnitOpNode,
   inputNode: InputNode,
   outputNode: OutputNode,
+};
+
+const edgeTypes: EdgeTypes = {
+  customEdge: CustomEdge,
 };
 
 //TODO: highlight selected block
@@ -146,6 +152,7 @@ export default function BlockFlowDiagram() {
                 onNodeClick={onNodeClick}
                 onEdgeClick={onEdgeClick}
                 nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
               >
                 <Controls />
                 <MiniMap />
@@ -255,6 +262,8 @@ const StreamDataDrawer = ({
   if (!selectedEdgeId) return;
   const selectedEdge = streams.find((p: Stream) => p.id == selectedEdgeId);
   if (!selectedEdge) return;
+
+  console.log("Selected Stream:", selectedEdge);
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>

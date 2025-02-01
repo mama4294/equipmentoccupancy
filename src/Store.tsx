@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { saveToFile, openFile } from "./utils/FileSystem";
 import {
-  BFDBlocks,
+  NodeTypes,
   CampaignSchedulingType,
   DurationUnit,
   Equipment,
@@ -73,7 +73,7 @@ type Action = {
   onBlocksChange: OnNodesChange;
   onStreamsChange: OnEdgesChange;
   onConnect: OnConnect;
-  addBlock: (type: BFDBlocks, position: XYPosition) => void;
+  addBlock: (type: NodeTypes, position: XYPosition) => void;
   updateBlockData: (id: string, data: BlockData) => void;
   updateStreamLabel: (id: string, label: string) => void;
   addEquipment: (procedure: Equipment) => void;
@@ -140,13 +140,15 @@ export const useStore = create<State & Action>()(
           streams: addEdge(
             {
               ...connection,
-              style: {
-                strokeWidth: 2,
-                stroke: "#FF0072",
-              },
+              type: "customEdge",
+              label: "",
+              // style: {
+              //   strokeWidth: 2,
+              //   stroke: "#FF0072",
+              // },
               markerEnd: {
                 type: MarkerType.ArrowClosed,
-                color: "#FF0072",
+                // color: "#FF0072",
                 // width: 30,
                 // height: 30,
               },
@@ -155,7 +157,7 @@ export const useStore = create<State & Action>()(
           ),
         });
       },
-      addBlock: (type: BFDBlocks, position: XYPosition) => {
+      addBlock: (type: NodeTypes, position: XYPosition) => {
         const newNode: Block = {
           id: `${get().blocks.length + 1}`,
           type,
