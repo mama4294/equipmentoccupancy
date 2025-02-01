@@ -5,13 +5,14 @@ export type State = {
   equipment: Equipment[];
   campaign: Campaign;
   resourceOptions: ResourceOption[];
-  procedures: Node[];
+  procedures: Procedure[];
   streams: Edge[];
 };
 
-export type BFDBlocks = "unitOperation" | "inputNode" | "outputNode";
-
 export type ProcedureData = { label: string; equipment: string };
+export type Procedure = Node<ProcedureData>;
+
+export type BFDBlocks = "unitOperation" | "inputNode" | "outputNode";
 
 export type CampaignSchedulingType = "optimized" | "fixed";
 

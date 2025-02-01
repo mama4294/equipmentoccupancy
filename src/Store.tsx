@@ -6,6 +6,7 @@ import {
   CampaignSchedulingType,
   DurationUnit,
   Equipment,
+  Procedure,
   ProcedureData,
   ResourceOption,
   State,
@@ -123,7 +124,10 @@ export const useStore = create<State & Action>()(
       },
       onProceduresChange: (changes: NodeChange[]) => {
         set({
-          procedures: applyNodeChanges(changes, get().procedures),
+          procedures: applyNodeChanges(
+            changes,
+            get().procedures
+          ) as Procedure[],
         });
       },
       onStreamsChange: (changes: EdgeChange[]) => {
@@ -148,24 +152,21 @@ export const useStore = create<State & Action>()(
         });
       },
       addProcedure: (type: BFDBlocks) => {
-        const newNode: Node = {
+        const newNode: Procedure = {
           id: `${get().procedures.length + 1}`,
           type,
           position: { x: Math.random() * 500, y: Math.random() * 300 },
           data: {
             label: `${type.charAt(0).toUpperCase() + type.slice(1)}`,
-            tag: "",
+            equipment: "",
           },
         };
         set({ procedures: [...get().procedures, newNode] });
       },
 
-      updateProcedureData: (
-        id: string,
-        newData: { label: string; description?: string }
-      ) => {
+      updateProcedureData: (id: string, newData: ProcedureData) => {
         set({
-          procedures: get().procedures.map((node: Node) => {
+          procedures: get().procedures.map((node: Procedure) => {
             if (node.id === id) {
               node.data = { ...node.data, ...newData };
             }
@@ -181,10 +182,10 @@ export const useStore = create<State & Action>()(
         });
       },
 
-      updateOperation: (operation: Node) =>
+      updateProcedure: (procedure: Procedure) =>
         set((state) => ({
           procedures: state.procedures.map((p) =>
-            p.id === operation.id ? operation : p
+            p.id === procedure.id ? procedure : p
           ),
         })),
       addEquipment: (equipment: Equipment) =>
