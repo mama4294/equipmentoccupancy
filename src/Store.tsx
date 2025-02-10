@@ -55,14 +55,39 @@ const initialState: State = {
   components: [
     {
       id: "1",
-      name: "water",
-      molecularFormula: "H20",
+      name: "Water",
+      molecularFormula: "H2O",
       molecularWeight: 18.01528,
       density: 1000,
       heatCapacity: 4.184,
     },
+    {
+      id: "2",
+      name: "Oxygen",
+      molecularFormula: "O2",
+      molecularWeight: 32.0,
+      density: 1.429,
+      heatCapacity: 0.918,
+    },
+    {
+      id: "3",
+      name: "Nitrogen",
+      molecularFormula: "N2",
+      molecularWeight: 28.0134,
+      density: 1.2506,
+      heatCapacity: 1.04,
+    },
   ],
-  mixtures: [],
+  mixtures: [
+    {
+      id: "1",
+      name: "Air",
+      components: [
+        { componentId: "2", proportion: 20.95 },
+        { componentId: "3", proportion: 78.08 },
+      ],
+    },
+  ],
   campaign: {
     quantity: 1,
     schedulingType: "optimized",
