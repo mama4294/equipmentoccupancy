@@ -13,8 +13,8 @@ import {
 import "@xyflow/react/dist/style.css";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "./ui/card";
-import { useStore } from "../Store";
+import { Card } from "../ui/card";
+import { useStore } from "../../Store";
 import {
   Menubar,
   MenubarCheckboxItem,
@@ -30,11 +30,11 @@ import {
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-} from "./ui/drawer";
-import UnitOpNode from "./blocks/ProcedureBlock";
-import OutputNode from "./blocks/OutputBlock";
-import InputNode from "./blocks/InputBlock";
-import CustomEdge from "./blocks/StreamEdge";
+} from "../ui/drawer";
+import UnitOpNode from "../blocks/ProcedureBlock";
+import OutputNode from "../blocks/OutputBlock";
+import InputNode from "../blocks/InputBlock";
+import CustomEdge from "../blocks/StreamEdge";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -42,10 +42,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { NodeTypes as BlockType, Stream } from "@/Types";
-import {
-  DarkModeProvider,
-  useDarkModeTheme,
-} from "./themes/DarkMode/DarkModeProvider";
+import { useDarkModeTheme } from "../themes/DarkMode/DarkModeProvider";
 
 const nodeTypes: NodeTypes = {
   unitOperation: UnitOpNode,

@@ -1,19 +1,19 @@
 import { useMemo } from "react";
-import EquipmentOccupancyChart from "./EquipmentOccupancyChart";
-import { calculateProcessDetails, calculateTiming } from "../utils/ganttLogic";
-import { useToast } from "../hooks/use-toast";
+import EquipmentOccupancyChart from "../EquipmentOccupancyChart";
 import {
   Campaign,
   Equipment,
   EquipmentWithTiming,
   ResourceOption,
 } from "@/Types";
-import BottleneckCard from "./cards/BottleneckCard";
-import BatchTimeCard from "./cards/BatchTimeCard";
-import CampaignCard from "./cards/CampaignCard";
-import ResourcesCard from "./cards/ResourcesCard";
-import ChartCard from "./cards/ResourceChart";
+import BottleneckCard from "../cards/BottleneckCard";
+import BatchTimeCard from "../cards/BatchTimeCard";
+import CampaignCard from "../cards/CampaignCard";
+import ResourcesCard from "../cards/ResourcesCard";
 import { useStore } from "@/Store";
+import { useToast } from "@/hooks/use-toast";
+import ChartCard from "../cards/ResourceChart";
+import { calculateProcessDetails, calculateTiming } from "@/utils/ganttLogic";
 
 const Schedule = () => {
   const { equipment, campaign, resourceOptions } = useStore();

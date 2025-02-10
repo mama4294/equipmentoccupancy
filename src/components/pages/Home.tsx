@@ -1,16 +1,16 @@
 import { useState } from "react";
-import Header from "./Header";
-import { useToast } from "../hooks/use-toast";
+import Header from "../Header";
 import BlockFlowDiagram from "./BlockFlowDiagram";
-import { GitBranch } from "lucide-react";
-import { Button } from "./ui/button";
+import { FlaskConical, GitBranch } from "lucide-react";
+import { Button } from "../ui/button";
 import { LayoutDashboard } from "lucide-react";
 import Schedule from "./Schedule";
+import Components from "./Components";
 
-type Screens = "bfd" | "dashboard";
+type Screens = "block flow" | "schedule" | "components";
 
 function HomePage() {
-  const [activeScreen, setActiveScreen] = useState<Screens>("bfd");
+  const [activeScreen, setActiveScreen] = useState<Screens>("block flow");
 
   return (
     <div className="h-screen w-screen ">
@@ -22,7 +22,9 @@ function HomePage() {
             setActiveScreen={setActiveScreen}
           />
           <main className="flex-1 p-4 h-full">
-            {activeScreen === "bfd" ? <BlockFlowDiagram /> : <Schedule />}
+            {activeScreen === "block flow" && <BlockFlowDiagram />}
+            {activeScreen === "schedule" && <Schedule />}
+            {activeScreen === "components" && <Components />}
           </main>
         </div>
       </div>
@@ -42,18 +44,25 @@ const Sidebar = ({
   return (
     <nav className="w-16 flex flex-col items-center py-4 space-y-4 h-full border-r">
       <Button
-        variant={activeScreen === "bfd" ? "default" : "ghost"}
+        variant={activeScreen === "block flow" ? "default" : "ghost"}
         size="icon"
-        onClick={() => setActiveScreen("bfd")}
+        onClick={() => setActiveScreen("block flow")}
       >
         <GitBranch className="h-6 w-6" />
       </Button>
       <Button
-        variant={activeScreen === "dashboard" ? "default" : "ghost"}
+        variant={activeScreen === "schedule" ? "default" : "ghost"}
         size="icon"
-        onClick={() => setActiveScreen("dashboard")}
+        onClick={() => setActiveScreen("schedule")}
       >
         <LayoutDashboard className="h-6 w-6" />
+      </Button>
+      <Button
+        variant={activeScreen === "components" ? "default" : "ghost"}
+        size="icon"
+        onClick={() => setActiveScreen("components")}
+      >
+        <FlaskConical className="h-6 w-6" />
       </Button>
     </nav>
   );

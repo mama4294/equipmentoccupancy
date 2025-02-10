@@ -7,6 +7,8 @@ export type State = {
   resourceOptions: ResourceOption[];
   blocks: Block[];
   streams: Stream[];
+  components: ComponentProperties[];
+  mixtures: Mixture[];
 };
 
 export interface Stream extends Edge {
@@ -95,3 +97,86 @@ export type ProcessDetails = {
 };
 
 export type Timepoint = { time: number; value: number };
+
+export type Mixture = {
+  id: string;
+  name: string;
+  components: { componentId: string; proportion: number }[];
+};
+
+export type ComponentProperties = {
+  // General Properties
+  id: string;
+  name: string;
+  molecularFormula: string;
+  molecularWeight: number; // g/mol
+  density?: number; // kg/m³
+  specificVolume?: number; // m³/kg
+  heatCapacity: number; //kJ/kg/K
+
+  // casNumber?: string;
+  // criticalTemperature?: number; // K
+  // criticalPressure?: number; // Pa
+  // criticalVolume?: number; // m³/mol
+
+  // // Physical Properties
+  // density?: number; // kg/m³
+  // specificVolume?: number; // m³/kg
+  // boilingPoint?: number; // K
+  // meltingPoint?: number; // K
+  // vaporPressure?: (T: number) => number; // Function of Temperature (Pa)
+  // solubilityInWater?: "miscible" | "limited" | "insoluble";
+  // partitionCoefficients?: {
+  //   octanolWater?: number;
+  //   airWater?: number;
+  // };
+
+  // // Thermodynamic Properties
+  // specificHeat?: {
+  //   liquid?: number; // kJ/kg·K
+  //   vapor?: number; // kJ/kg·K
+  // };
+  // enthalpyOfFormation?: number; // kJ/mol
+  // heatOfVaporization?: number; // kJ/kg
+  // heatOfFusion?: number; // kJ/kg
+  // entropy?: number; // J/mol·K
+
+  // // Transport Properties
+  // viscosity?: {
+  //   liquid?: number; // Pa·s
+  //   gas?: number; // Pa·s
+  // };
+  // thermalConductivity?: {
+  //   liquid?: number; // W/m·K
+  //   gas?: number; // W/m·K
+  // };
+  // surfaceTension?: number; // N/m
+
+  // // Phase Equilibrium Data
+  // activityCoefficients?: number[];
+  // vaporLiquidEquilibrium?: (T: number, P: number) => number; // Function of Temp & Pressure
+  // liquidLiquidEquilibrium?: (T: number) => number; // Function of Temperature
+  // solidLiquidEquilibrium?: (T: number) => number; // Function of Temperature
+
+  // // Safety & Environmental Properties
+  // flashPoint?: number; // K
+  // autoignitionTemperature?: number; // K
+  // toxicityTLV?: number; // Threshold limit value (ppm)
+  // environmentalFate?: {
+  //   biodegradability?: string;
+  //   toxicityRating?: string;
+  //   ozoneDepletionPotential?: number;
+  // };
+
+  // // Reaction & Biological Properties
+  // reactionKinetics?: {
+  //   activationEnergy?: number; // kJ/mol
+  //   preExponentialFactor?: number; // 1/s
+  // };
+  // biodegradabilityCoefficient?: number;
+  // oxygenDemand?: {
+  //   BOD?: number; // Biological Oxygen Demand
+  //   COD?: number; // Chemical Oxygen Demand
+  // };
+  // henrysLawConstant?: number; // Pa·m³/mol
+};

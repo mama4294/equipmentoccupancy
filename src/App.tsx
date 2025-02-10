@@ -2,7 +2,7 @@ import { Toaster } from "./components/ui/toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { DarkModeProvider } from "./components/themes/DarkMode/DarkModeProvider";
 import { ColorThemeProvider } from "./components/themes/ColorTheme/ColorThemeProvider";
-import Home from "./components/Home";
+import Home from "./components/pages/Home";
 
 function App() {
   return (

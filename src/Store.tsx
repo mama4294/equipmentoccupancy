@@ -10,6 +10,8 @@ import {
   BlockData,
   ResourceOption,
   State,
+  ComponentProperties,
+  Mixture,
 } from "./Types";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -50,6 +52,17 @@ const initialState: State = {
     },
   ],
   streams: [],
+  components: [
+    {
+      id: "1",
+      name: "water",
+      molecularFormula: "H20",
+      molecularWeight: 18.01528,
+      density: 1000,
+      heatCapacity: 4.184,
+    },
+  ],
+  mixtures: [],
   campaign: {
     quantity: 1,
     schedulingType: "optimized",
@@ -65,23 +78,30 @@ const initialState: State = {
 };
 
 type Action = {
+  //General
   updateProjectTitle: (title: string) => void;
   saveState: () => void;
   saveAsState: () => void;
   loadState: () => void;
   resetState: () => void;
+
+  //Block flow diagram
   onBlocksChange: OnNodesChange;
   onStreamsChange: OnEdgesChange;
   onConnect: OnConnect;
   addBlock: (type: NodeTypes, position: XYPosition) => void;
   updateBlockData: (id: string, data: BlockData) => void;
   updateStreamLabel: (id: string, label: string) => void;
+
+  //Equipment
   addEquipment: (procedure: Equipment) => void;
   updateEquipment: (procedure: Equipment) => void;
   deleteEquipment: (procedure: Equipment) => void;
   duplicateEquipment: (procedure: Equipment) => void;
   moveEquipmentUp: (equipmentId: string) => void;
   moveEquipmentDown: (equipmentId: string) => void;
+
+  //Campaigns
   updateCampaignQuantity: (quantity: number) => void;
   updateCampaignSchedulingType: (
     schedulingType: CampaignSchedulingType
@@ -92,6 +112,18 @@ type Action = {
   addResourceOption: (resource: ResourceOption) => void;
   updateResourceOption: (resource: ResourceOption) => void;
   deleteResourceOption: (resource: ResourceOption) => void;
+
+  //Ingredients
+  components: ComponentProperties[];
+  mixtures: Mixture[];
+  addComponent: (component: ComponentProperties) => void;
+  updateComponent: (id: string, component: ComponentProperties) => void;
+  deleteComponent: (id: string) => void;
+  duplicateComponent: (id: string) => void;
+  addMixture: (mixture: Mixture) => void;
+  updateMixture: (id: string, mixture: Mixture) => void;
+  deleteMixture: (id: string) => void;
+  duplicateMixture: (id: string) => void;
 };
 
 export const useStore = create<State & Action>()(
@@ -297,6 +329,59 @@ export const useStore = create<State & Action>()(
             (r: ResourceOption) => r.id !== resource.id
           ),
         })),
+
+      addComponent: (component) =>
+        set((state) => ({
+          components: [...state.components, component],
+        })),
+      updateComponent: (id, updatedComponent) =>
+        set((state) => ({
+          components: state.components.map((c) =>
+            c.id === id ? updatedComponent : c
+          ),
+        })),
+      deleteComponent: (id) =>
+        set((state) => ({
+          components: state.components.filter((c) => c.id !== id),
+        })),
+      duplicateComponent: (id) =>
+        set((state) => {
+          const componentToDuplicate = state.components.find(
+            (c) => c.id === id
+          );
+          if (!componentToDuplicate) return state;
+          const newComponent = {
+            ...componentToDuplicate,
+            id: Date.now().toString(),
+            name: `${componentToDuplicate.name} (Copy)`,
+          };
+          return { components: [...state.components, newComponent] };
+        }),
+      addMixture: (mixture) =>
+        set((state) => ({
+          mixtures: [...state.mixtures, mixture],
+        })),
+      updateMixture: (id, updatedMixture) =>
+        set((state) => ({
+          mixtures: state.mixtures.map((m) =>
+            m.id === id ? updatedMixture : m
+          ),
+        })),
+      deleteMixture: (id) =>
+        set((state) => ({
+          mixtures: state.mixtures.filter((m) => m.id !== id),
+        })),
+      duplicateMixture: (id) =>
+        set((state) => {
+          const mixtureToDuplicate = state.mixtures.find((m) => m.id === id);
+          if (!mixtureToDuplicate) return state;
+          const newMixture = {
+            ...mixtureToDuplicate,
+            id: Date.now().toString(),
+            name: `${mixtureToDuplicate.name} (Copy)`,
+          };
+          return { mixtures: [...state.mixtures, newMixture] };
+        }),
     }),
     {
       name: "equipment-occupancy-data", // (must be unique)
