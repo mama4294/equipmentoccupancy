@@ -19,7 +19,12 @@ export type EdgeTypes = "customEdge";
 export type BlockData = { label: string; equipment: string };
 export type Block = Node<BlockData>;
 
-export type NodeTypes = "unitOperation" | "inputNode" | "outputNode";
+export type NodeTypes =
+  | "unitOperation"
+  | "inputNode"
+  | "outputNode"
+  | "mixer"
+  | "fermentation";
 
 export type CampaignSchedulingType = "optimized" | "fixed";
 

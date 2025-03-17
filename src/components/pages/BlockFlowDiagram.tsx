@@ -35,6 +35,8 @@ import UnitOpNode from "../blocks/ProcedureBlock";
 import OutputNode from "../blocks/OutputBlock";
 import InputNode from "../blocks/InputBlock";
 import CustomEdge from "../blocks/StreamEdge";
+import Mixer from "../blocks/Mixer";
+import Fermentation from "../blocks/Fermentation";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -48,6 +50,8 @@ const nodeTypes: NodeTypes = {
   unitOperation: UnitOpNode,
   inputNode: InputNode,
   outputNode: OutputNode,
+  mixer: Mixer,
+  fermentation: Fermentation,
 };
 
 const edgeTypes: EdgeTypes = {
@@ -95,10 +99,6 @@ export default function BlockFlowDiagram() {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="bg-primary">Primary</div>
-      <div className="bg-selected">Selected</div>
-      <div className="bg-secondary">Secondary</div>
-      <div className="bg-accent">Accent</div>
       <h1 className="text-2xl font-bold mb-2">Block Flow Diagram</h1>
       <div className="pb-2 w-auto">
         <Menubar>
@@ -113,6 +113,12 @@ export default function BlockFlowDiagram() {
               </MenubarItem>
               <MenubarItem onClick={(e) => onAddBlock(e, "outputNode")}>
                 New Output
+              </MenubarItem>
+              <MenubarItem onClick={(e) => onAddBlock(e, "mixer")}>
+                Mixing
+              </MenubarItem>
+              <MenubarItem onClick={(e) => onAddBlock(e, "fermentation")}>
+                Fermentation
               </MenubarItem>
               <MenubarSeparator />
               <MenubarItem onClick={deleteSelectedElements}>Delete</MenubarItem>
@@ -177,6 +183,12 @@ export default function BlockFlowDiagram() {
               </ContextMenuItem>
               <ContextMenuItem onClick={(e) => onAddBlock(e, "outputNode")}>
                 Add Output
+              </ContextMenuItem>
+              <ContextMenuItem onClick={(e) => onAddBlock(e, "mixer")}>
+                Mixer
+              </ContextMenuItem>
+              <ContextMenuItem onClick={(e) => onAddBlock(e, "fermentation")}>
+                Fermentation
               </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
