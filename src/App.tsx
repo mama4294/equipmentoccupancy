@@ -4,6 +4,8 @@ import { DarkModeProvider } from "./components/themes/DarkMode/DarkModeProvider"
 import { ColorThemeProvider } from "./components/themes/ColorTheme/ColorThemeProvider";
 import Home from "./components/pages/Home";
 
+//TODO: Fix steam edge selected color
+
 function App() {
   return (
     <DarkModeProvider defaultTheme="light" storageKey="eoc-theme">

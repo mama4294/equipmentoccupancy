@@ -1,10 +1,7 @@
 import {
   BaseEdge,
   EdgeLabelRenderer,
-  EdgeMarker,
   getBezierPath,
-  MarkerType,
-  useReactFlow,
   type EdgeProps,
 } from "@xyflow/react";
 
@@ -17,7 +14,7 @@ export default function CustomEdge({
   sourcePosition,
   targetPosition,
   label,
-  markerEnd,
+  selected,
 }: EdgeProps) {
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
@@ -41,19 +38,22 @@ export default function CustomEdge({
             orient="auto"
             markerUnits="strokeWidth"
           >
-            <path d="M0,0 L4,1.5 L0,3 Z" className="fill-primary" />
+            <path
+              d="M0,0 L4,1.5 L0,3 Z"
+              className={selected ? "fill-selected" : "fill-primary"}
+            />
           </marker>
         </defs>
       </svg>
       <BaseEdge
         path={edgePath}
         markerEnd={`url(#arrow-${id})`}
-        className="stroke-primary"
+        className={selected ? "stroke-selected" : "stroke-primary"}
         style={{ strokeWidth: 2 }}
       />
       <EdgeLabelRenderer>
         <div
-          className="button-edge__label nodrag nopan bg-background text-center"
+          className="button-edge__label nodrag nopan bg-background text-center "
           style={{
             width: "fit-content",
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,

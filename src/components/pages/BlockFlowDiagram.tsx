@@ -95,6 +95,10 @@ export default function BlockFlowDiagram() {
 
   return (
     <div className="w-full h-full flex flex-col">
+      <div className="bg-primary">Primary</div>
+      <div className="bg-selected">Selected</div>
+      <div className="bg-secondary">Secondary</div>
+      <div className="bg-accent">Accent</div>
       <h1 className="text-2xl font-bold mb-2">Block Flow Diagram</h1>
       <div className="pb-2 w-auto">
         <Menubar>
@@ -151,8 +155,10 @@ export default function BlockFlowDiagram() {
                 onNodesChange={onBlocksChange}
                 onEdgesChange={onStreamsChange}
                 onConnect={onConnect}
-                onNodeClick={onNodeClick}
-                onEdgeClick={onEdgeClick}
+                // onNodeClick={onNodeClick}
+                //onEdgeClick={onEdgeClick}
+                onNodeDoubleClick={onNodeClick}
+                onEdgeDoubleClick={onEdgeClick}
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
                 colorMode={theme}
