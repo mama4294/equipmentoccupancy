@@ -45,6 +45,8 @@ import {
 } from "@/components/ui/context-menu";
 import { NodeTypes as BlockType, Stream } from "@/Types";
 import { useDarkModeTheme } from "../themes/DarkMode/DarkModeProvider";
+import { Button } from "../ui/button";
+import { Target } from "lucide-react";
 
 const nodeTypes: NodeTypes = {
   unitOperation: UnitOpNode,
@@ -99,7 +101,13 @@ export default function BlockFlowDiagram() {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <h1 className="text-2xl font-bold mb-2">Block Flow Diagram</h1>
+      <div className="flex justify-between align-top flex-wrap">
+        <h1 className="text-2xl font-bold mb-2">Simulation</h1>
+        <Button>
+          <Target className="w-4 h-4 mr-2" />
+          Simulate
+        </Button>
+      </div>
       <div className="pb-2 w-auto">
         <Menubar>
           <MenubarMenu>

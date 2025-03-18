@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Header from "../Header";
-import BlockFlowDiagram from "./BlockFlowDiagram";
+import Simulation from "./Simulation";
 import { FlaskConical, GitBranch } from "lucide-react";
 import { Button } from "../ui/button";
 import { LayoutDashboard } from "lucide-react";
@@ -22,7 +22,7 @@ function HomePage() {
             setActiveScreen={setActiveScreen}
           />
           <main className="flex-1 p-4 h-full">
-            {activeScreen === "block flow" && <BlockFlowDiagram />}
+            {activeScreen === "block flow" && <Simulation />}
             {activeScreen === "schedule" && <Schedule />}
             {activeScreen === "components" && <Components />}
           </main>

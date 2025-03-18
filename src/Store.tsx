@@ -208,12 +208,13 @@ export const useStore = create<State & Action>()(
         });
       },
       addBlock: (type: NodeTypes, position: XYPosition) => {
+        //TODO add case type and differentite between adds
         const newNode: Block = {
           id: `${get().blocks.length + 1}`,
           type,
           position,
           data: {
-            label: `${type.charAt(0).toUpperCase() + type.slice(1)}`,
+            label: "",
             equipment: "",
           },
         };
