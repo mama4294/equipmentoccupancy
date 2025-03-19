@@ -49,7 +49,12 @@ const initialState: State = {
       id: "1",
       type: "unitOperation",
       position: { x: 250, y: 5 },
-      data: { label: "Fermenter", equipment: "3F Fermenter", components: [] },
+      data: {
+        label: "Fermenter",
+        equipment: "3F Fermenter",
+        components: [],
+        isAutoCalc: false,
+      },
     },
   ],
   streams: [],
@@ -220,6 +225,7 @@ export const useStore = create<State & Action>()(
             label: "",
             equipment: "",
             components: [],
+            isAutoCalc: false,
           },
         };
         set({ blocks: [...get().blocks, newNode] });

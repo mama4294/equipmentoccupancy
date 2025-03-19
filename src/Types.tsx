@@ -20,6 +20,7 @@ export type BlockData = {
   label: string;
   equipment: string;
   components: componentFlow[];
+  isAutoCalc: boolean;
 };
 export type Block = Node<BlockData>;
 
