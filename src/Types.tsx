@@ -13,6 +13,9 @@ export type State = {
 
 export interface Stream extends Edge {
   label?: string;
+  components: componentFlow[];
+  hasError: boolean;
+  calculationComplete: boolean;
 }
 export type EdgeTypes = "customEdge";
 
@@ -20,16 +23,25 @@ export type BlockData = {
   label: string;
   equipment: string;
   components: componentFlow[];
+  calculatedComponents: componentFlow[];
   isAutoCalc: boolean;
 };
 export type Block = Node<BlockData>;
 
-export type NodeTypes =
-  | "unitOperation"
-  | "inputNode"
-  | "outputNode"
-  | "mixer"
-  | "fermentation";
+export enum BlockTypes {
+  UnitOperation = "unitOperation",
+  InputNode = "inputNode",
+  OutputNode = "outputNode",
+  Mixer = "mixer",
+  Fermentation = "fermentation",
+}
+
+// export type NodeTypes =
+//   | "unitOperation"
+//   | "inputNode"
+//   | "outputNode"
+//   | "mixer"
+//   | "fermentation";
 
 export type CampaignSchedulingType = "optimized" | "fixed";
 

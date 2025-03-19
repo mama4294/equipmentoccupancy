@@ -11,8 +11,6 @@ import {
   EdgeTypes,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card } from "../ui/card";
 import { useStore } from "../../Store";
 import {
@@ -24,13 +22,7 @@ import {
   MenubarSeparator,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-} from "../ui/drawer";
+
 import UnitOpNode from "../blocks/ProcedureBlock";
 import OutputNode from "../blocks/OutputBlock";
 import InputNode from "../blocks/InputBlock";
@@ -43,12 +35,10 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { NodeTypes as BlockType, Stream } from "@/Types";
+import { BlockTypes as BlockType, BlockTypes } from "@/Types";
 import { useDarkModeTheme } from "../themes/DarkMode/DarkModeProvider";
 import { Button } from "../ui/button";
-import { Plus, Target, Trash2 } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
-import { SelectValue } from "@radix-ui/react-select";
+import { Target } from "lucide-react";
 import EditProcedureDrawer from "../drawers/procedureDrawer";
 import InputStreamDrawer from "../drawers/InputStreamDrawer";
 import StreamDataDrawer from "../drawers/StreamDrawer";
@@ -79,6 +69,7 @@ export default function BlockFlowDiagram() {
     onConnect,
     addBlock,
     deleteSelectedElements,
+    simulate,
   } = useStore();
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -115,7 +106,7 @@ export default function BlockFlowDiagram() {
     <div className="w-full h-full flex flex-col">
       <div className="flex justify-between align-top flex-wrap">
         <h1 className="text-2xl font-bold mb-2">Simulation</h1>
-        <Button>
+        <Button onClick={simulate}>
           <Target className="w-4 h-4 mr-2" />
           Simulate
         </Button>
@@ -125,19 +116,25 @@ export default function BlockFlowDiagram() {
           <MenubarMenu>
             <MenubarTrigger>Edit</MenubarTrigger>
             <MenubarContent>
-              <MenubarItem onClick={(e) => onAddBlock(e, "unitOperation")}>
+              <MenubarItem
+                onClick={(e) => onAddBlock(e, BlockTypes.UnitOperation)}
+              >
                 New Operation
               </MenubarItem>
-              <MenubarItem onClick={(e) => onAddBlock(e, "inputNode")}>
+              <MenubarItem onClick={(e) => onAddBlock(e, BlockTypes.InputNode)}>
                 New Input
               </MenubarItem>
-              <MenubarItem onClick={(e) => onAddBlock(e, "outputNode")}>
+              <MenubarItem
+                onClick={(e) => onAddBlock(e, BlockTypes.OutputNode)}
+              >
                 New Output
               </MenubarItem>
-              <MenubarItem onClick={(e) => onAddBlock(e, "mixer")}>
+              <MenubarItem onClick={(e) => onAddBlock(e, BlockTypes.Mixer)}>
                 Mixing
               </MenubarItem>
-              <MenubarItem onClick={(e) => onAddBlock(e, "fermentation")}>
+              <MenubarItem
+                onClick={(e) => onAddBlock(e, BlockTypes.Fermentation)}
+              >
                 Fermentation
               </MenubarItem>
               <MenubarSeparator />
@@ -195,19 +192,27 @@ export default function BlockFlowDiagram() {
               </ReactFlow>
             </ContextMenuTrigger>
             <ContextMenuContent>
-              <ContextMenuItem onClick={(e) => onAddBlock(e, "unitOperation")}>
+              <ContextMenuItem
+                onClick={(e) => onAddBlock(e, BlockTypes.UnitOperation)}
+              >
                 Add Operation
               </ContextMenuItem>
-              <ContextMenuItem onClick={(e) => onAddBlock(e, "inputNode")}>
+              <ContextMenuItem
+                onClick={(e) => onAddBlock(e, BlockTypes.InputNode)}
+              >
                 Add Input
               </ContextMenuItem>
-              <ContextMenuItem onClick={(e) => onAddBlock(e, "outputNode")}>
+              <ContextMenuItem
+                onClick={(e) => onAddBlock(e, BlockTypes.OutputNode)}
+              >
                 Add Output
               </ContextMenuItem>
-              <ContextMenuItem onClick={(e) => onAddBlock(e, "mixer")}>
+              <ContextMenuItem onClick={(e) => onAddBlock(e, BlockTypes.Mixer)}>
                 Mixer
               </ContextMenuItem>
-              <ContextMenuItem onClick={(e) => onAddBlock(e, "fermentation")}>
+              <ContextMenuItem
+                onClick={(e) => onAddBlock(e, BlockTypes.Fermentation)}
+              >
                 Fermentation
               </ContextMenuItem>
             </ContextMenuContent>

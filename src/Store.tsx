@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { saveToFile, openFile } from "./utils/FileSystem";
 import {
-  NodeTypes,
+  BlockTypes,
   CampaignSchedulingType,
   DurationUnit,
   Equipment,
@@ -13,6 +13,7 @@ import {
   ComponentProperties,
   Mixture,
   componentFlow,
+  Stream,
 } from "./Types";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -34,6 +35,7 @@ import {
   MarkerType,
   XYPosition,
 } from "@xyflow/react";
+import { solveMassBalance } from "./lib/solveMassBal";
 
 //TODO: On deleteResourceOption, delete all equipment resources of the same type.
 
@@ -53,6 +55,7 @@ const initialState: State = {
         label: "Fermenter",
         equipment: "3F Fermenter",
         components: [],
+        calculatedComponents: [],
         isAutoCalc: false,
       },
     },
@@ -115,16 +118,21 @@ type Action = {
   saveAsState: () => void;
   loadState: () => void;
   resetState: () => void;
+  simulate: () => void;
 
-  //Block flow diagram
+  //Blocks
   onBlocksChange: OnNodesChange;
   onStreamsChange: OnEdgesChange;
   onConnect: OnConnect;
-  addBlock: (type: NodeTypes, position: XYPosition) => void;
+  addBlock: (type: BlockTypes, position: XYPosition) => void;
   updateBlockData: (id: string, data: BlockData) => void;
   addComponentToBlock: (id: string, data: componentFlow) => void;
   deleteComponentFromBlock: (blockId: string, componentId: string) => void;
+  updateMultipleBlocks: (updatedBlocks: Block[]) => void;
+
+  //Streams
   updateStreamLabel: (id: string, label: string) => void;
+  updateMultipleStreams: (updatedStreams: Stream[]) => void;
 
   //Equipment
   addEquipment: (procedure: Equipment) => void;
@@ -173,6 +181,8 @@ export const useStore = create<State & Action>()(
           window.handle
         );
       },
+
+      //GENERAL
       saveAsState: async () => {
         const state = useStore.getState();
         await saveToFile(state, `${useStore.getState().projectTitle}.json`);
@@ -189,33 +199,20 @@ export const useStore = create<State & Action>()(
         set(initialState);
         window.handle = undefined;
       },
+
+      simulate: () => {
+        console.log("Simulating");
+        solveMassBalance();
+      },
+
+      //BLOCKS
       onBlocksChange: (changes: NodeChange[]) => {
         set({
           blocks: applyNodeChanges(changes, get().blocks) as Block[],
         });
       },
-      onStreamsChange: (changes: EdgeChange[]) => {
-        set({
-          streams: applyEdgeChanges(changes, get().streams),
-        });
-      },
 
-      onConnect: (connection: Connection) => {
-        set({
-          streams: addEdge(
-            {
-              ...connection,
-              type: "customEdge",
-              label: "",
-              markerEnd: {
-                type: MarkerType.ArrowClosed,
-              },
-            },
-            get().streams
-          ),
-        });
-      },
-      addBlock: (type: NodeTypes, position: XYPosition) => {
+      addBlock: (type: BlockTypes, position: XYPosition) => {
         //TODO add case type and differentite between adds
         const newNode: Block = {
           id: `${get().blocks.length + 1}`,
@@ -225,6 +222,7 @@ export const useStore = create<State & Action>()(
             label: "",
             equipment: "",
             components: [],
+            calculatedComponents: [],
             isAutoCalc: false,
           },
         };
@@ -276,6 +274,12 @@ export const useStore = create<State & Action>()(
         }));
       },
 
+      updateMultipleBlocks: (updatedBlocks: Block[]) => {
+        set({ blocks: updatedBlocks });
+      },
+
+      //STREAMS
+
       updateStreamLabel: (id: string, label: string) => {
         set({
           streams: get().streams.map((edge) => {
@@ -288,6 +292,36 @@ export const useStore = create<State & Action>()(
             }
             return edge;
           }),
+        });
+      },
+
+      updateMultipleStreams: (updatedStreams: Stream[]) => {
+        set({ streams: updatedStreams });
+      },
+
+      onStreamsChange: (changes: EdgeChange[]) => {
+        set((state) => ({
+          streams: applyEdgeChanges(changes, state.streams).map((edge) => ({
+            ...edge,
+            components: [],
+            hasError: false,
+            calculationComplete: false,
+          })) as Stream[], // Cast to Stream[]
+        }));
+      },
+      onConnect: (connection: Connection) => {
+        set({
+          streams: addEdge(
+            {
+              ...connection,
+              type: "customEdge",
+              label: "",
+              markerEnd: {
+                type: MarkerType.ArrowClosed,
+              },
+            },
+            get().streams
+          ),
         });
       },
 
@@ -304,6 +338,7 @@ export const useStore = create<State & Action>()(
             p.id === procedure.id ? procedure : p
           ),
         })),
+
       addEquipment: (equipment: Equipment) =>
         set((state) => ({ equipment: [...state.equipment, equipment] })),
       updateEquipment: (equipment: Equipment) =>
