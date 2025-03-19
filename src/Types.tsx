@@ -7,7 +7,7 @@ export type State = {
   resourceOptions: ResourceOption[];
   blocks: Block[];
   streams: Stream[];
-  components: ComponentProperties[];
+  registeredComponents: ComponentProperties[];
   mixtures: Mixture[];
 };
 
@@ -16,7 +16,11 @@ export interface Stream extends Edge {
 }
 export type EdgeTypes = "customEdge";
 
-export type BlockData = { label: string; equipment: string };
+export type BlockData = {
+  label: string;
+  equipment: string;
+  components: componentFlow[];
+};
 export type Block = Node<BlockData>;
 
 export type NodeTypes =
@@ -107,6 +111,12 @@ export type Mixture = {
   id: string;
   name: string;
   components: { componentId: string; proportion: number }[];
+};
+
+export type componentFlow = {
+  id: string;
+  mass: number;
+  unit: string;
 };
 
 export type ComponentProperties = {

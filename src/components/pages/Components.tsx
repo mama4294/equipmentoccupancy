@@ -36,7 +36,7 @@ const Components = () => {
   const [isMixtureSheetOpen, setIsMixtureSheetOpen] = useState(false);
 
   const {
-    components,
+    registeredComponents: components,
     mixtures,
     addComponent,
     updateComponent,

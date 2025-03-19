@@ -12,6 +12,7 @@ import {
   State,
   ComponentProperties,
   Mixture,
+  componentFlow,
 } from "./Types";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -48,11 +49,11 @@ const initialState: State = {
       id: "1",
       type: "unitOperation",
       position: { x: 250, y: 5 },
-      data: { label: "Fermenter", equipment: "3F Fermenter" },
+      data: { label: "Fermenter", equipment: "3F Fermenter", components: [] },
     },
   ],
   streams: [],
-  components: [
+  registeredComponents: [
     {
       id: "1",
       name: "Water",
@@ -116,6 +117,8 @@ type Action = {
   onConnect: OnConnect;
   addBlock: (type: NodeTypes, position: XYPosition) => void;
   updateBlockData: (id: string, data: BlockData) => void;
+  addComponentToBlock: (id: string, data: componentFlow) => void;
+  deleteComponentFromBlock: (blockId: string, componentId: string) => void;
   updateStreamLabel: (id: string, label: string) => void;
 
   //Equipment
@@ -139,7 +142,7 @@ type Action = {
   deleteResourceOption: (resource: ResourceOption) => void;
 
   //Ingredients
-  components: ComponentProperties[];
+  registeredComponents: ComponentProperties[];
   mixtures: Mixture[];
   addComponent: (component: ComponentProperties) => void;
   updateComponent: (id: string, component: ComponentProperties) => void;
@@ -216,6 +219,7 @@ export const useStore = create<State & Action>()(
           data: {
             label: "",
             equipment: "",
+            components: [],
           },
         };
         set({ blocks: [...get().blocks, newNode] });
@@ -226,6 +230,40 @@ export const useStore = create<State & Action>()(
           blocks: state.blocks.map((node: Block) => {
             if (node.id === id) {
               return { ...node, data: { ...node.data, ...newData } };
+            }
+            return node;
+          }),
+        }));
+      },
+      addComponentToBlock: (id: string, newData: componentFlow) => {
+        set((state) => ({
+          blocks: state.blocks.map((node: Block) => {
+            if (node.id === id) {
+              return {
+                ...node,
+                data: {
+                  ...node.data,
+                  components: [...(node.data.components || []), newData],
+                },
+              };
+            }
+            return node;
+          }),
+        }));
+      },
+      deleteComponentFromBlock: (blockId: string, componentId: string) => {
+        set((state) => ({
+          blocks: state.blocks.map((node: Block) => {
+            if (node.id === blockId) {
+              return {
+                ...node,
+                data: {
+                  ...node.data,
+                  components: node.data.components.filter(
+                    (component) => component.id !== componentId
+                  ),
+                },
+              };
             }
             return node;
           }),
@@ -358,21 +396,23 @@ export const useStore = create<State & Action>()(
 
       addComponent: (component) =>
         set((state) => ({
-          components: [...state.components, component],
+          registeredComponents: [...state.registeredComponents, component],
         })),
       updateComponent: (id, updatedComponent) =>
         set((state) => ({
-          components: state.components.map((c) =>
+          registeredComponents: state.registeredComponents.map((c) =>
             c.id === id ? updatedComponent : c
           ),
         })),
       deleteComponent: (id) =>
         set((state) => ({
-          components: state.components.filter((c) => c.id !== id),
+          registeredComponents: state.registeredComponents.filter(
+            (c) => c.id !== id
+          ),
         })),
       duplicateComponent: (id) =>
         set((state) => {
-          const componentToDuplicate = state.components.find(
+          const componentToDuplicate = state.registeredComponents.find(
             (c) => c.id === id
           );
           if (!componentToDuplicate) return state;
@@ -381,7 +421,9 @@ export const useStore = create<State & Action>()(
             id: Date.now().toString(),
             name: `${componentToDuplicate.name} (Copy)`,
           };
-          return { components: [...state.components, newComponent] };
+          return {
+            registeredComponents: [...state.registeredComponents, newComponent],
+          };
         }),
       addMixture: (mixture) =>
         set((state) => ({
