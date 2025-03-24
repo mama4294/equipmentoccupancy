@@ -1,5 +1,5 @@
 import { useStore } from "../Store";
-import { BlockTypes } from "@/Types";
+import { BlockTypes, StreamData } from "@/Types";
 import { useToast } from "../hooks/use-toast";
 
 export const useSolveMassBalance = () => {
@@ -17,8 +17,20 @@ export const useSolveMassBalance = () => {
       });
 
       // Track unresolved blocks and streams
-      let remainingBlocks = new Set(blocks.map((block) => block.id));
-      let remainingStreams = new Set(streams.map((stream) => stream.id));
+      let remainingBlocks = new Set(
+        blocks.map((block) => {
+          block.data.hasError = true;
+          block.data.calculationComplete = false;
+          return block.id;
+        })
+      );
+      let remainingStreams = new Set(
+        streams.map((stream) => {
+          (stream.data as StreamData).hasError = true;
+          (stream.data as StreamData).calculationComplete = false;
+          return stream.id;
+        })
+      );
 
       // Create local copies of blocks and streams to modify during calculations
       let updatedBlocks = [...blocks];

@@ -12,16 +12,12 @@ export type State = {
   isDebug: boolean;
 };
 
-// export interface Stream extends Edge {
-//   label?: string;
-//   components: componentFlow[];
-//   hasError: boolean;
-//   calculationComplete: boolean;
-// }
-
 export type Stream = Edge<StreamData>;
 
-export type EdgeTypes = "customEdge";
+// export type EdgeTypes = "customEdge";
+export enum EdgeTypes {
+  CustomEdge = "customEdge",
+}
 
 export type StreamData = {
   // label: string;

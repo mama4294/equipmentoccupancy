@@ -333,16 +333,25 @@ export const useStore = create<State & Action>()(
         set({ streams: updatedStreams });
       },
 
+      // onStreamsChange: (changes: EdgeChange[]) => {
+      //   set({
+      //     streams: applyEdgeChanges(changes, get().streams) as Stream[],
+      //   });
+      // },
+
       onStreamsChange: (changes: EdgeChange[]) => {
         set((state) => ({
           streams: applyEdgeChanges(changes, state.streams).map((edge) => ({
             ...edge,
             data: {
-              ...edge.data,
-              label: (edge.data?.label as string) || "",
-              calculatedComponents: [],
-              hasError: false,
-              calculationComplete: false,
+              label: edge.data?.label || "",
+              calculatedComponents: Array.isArray(
+                edge.data?.calculatedComponents
+              )
+                ? edge.data.calculatedComponents
+                : [],
+              hasError: Boolean(edge.data?.hasError),
+              calculationComplete: Boolean(edge.data?.calculationComplete),
             },
           })) as Stream[],
         }));
@@ -353,6 +362,11 @@ export const useStore = create<State & Action>()(
             {
               ...connection,
               type: "customEdge",
+              data: {
+                hasError: false,
+                calculationComplete: false,
+                calculatedComponents: [],
+              },
               // label: "",
               markerEnd: {
                 type: MarkerType.ArrowClosed,
