@@ -9,15 +9,26 @@ export type State = {
   streams: Stream[];
   registeredComponents: ComponentProperties[];
   mixtures: Mixture[];
+  isDebug: boolean;
 };
 
-export interface Stream extends Edge {
-  label?: string;
-  components: componentFlow[];
+// export interface Stream extends Edge {
+//   label?: string;
+//   components: componentFlow[];
+//   hasError: boolean;
+//   calculationComplete: boolean;
+// }
+
+export type Stream = Edge<StreamData>;
+
+export type EdgeTypes = "customEdge";
+
+export type StreamData = {
+  // label: string;
+  calculatedComponents: componentFlow[];
   hasError: boolean;
   calculationComplete: boolean;
-}
-export type EdgeTypes = "customEdge";
+};
 
 export type BlockData = {
   label: string;
@@ -25,6 +36,8 @@ export type BlockData = {
   components: componentFlow[];
   calculatedComponents: componentFlow[];
   isAutoCalc: boolean;
+  hasError: boolean;
+  calculationComplete: boolean;
 };
 export type Block = Node<BlockData>;
 

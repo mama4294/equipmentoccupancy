@@ -35,7 +35,6 @@ import {
   MarkerType,
   XYPosition,
 } from "@xyflow/react";
-import { solveMassBalance } from "./lib/solveMassBal";
 
 //TODO: On deleteResourceOption, delete all equipment resources of the same type.
 
@@ -57,6 +56,8 @@ const initialState: State = {
         components: [],
         calculatedComponents: [],
         isAutoCalc: false,
+        hasError: false,
+        calculationComplete: false,
       },
     },
   ],
@@ -109,6 +110,7 @@ const initialState: State = {
     { id: "3", name: "Electricity", unit: "kW" },
     { id: "4", name: "CIP", unit: "lpm" },
   ],
+  isDebug: true,
 };
 
 type Action = {
@@ -118,7 +120,7 @@ type Action = {
   saveAsState: () => void;
   loadState: () => void;
   resetState: () => void;
-  simulate: () => void;
+  toggleDebug: () => void;
 
   //Blocks
   onBlocksChange: OnNodesChange;
@@ -129,6 +131,11 @@ type Action = {
   addComponentToBlock: (id: string, data: componentFlow) => void;
   deleteComponentFromBlock: (blockId: string, componentId: string) => void;
   updateMultipleBlocks: (updatedBlocks: Block[]) => void;
+  updateBlockMass: (
+    blockId: string,
+    ingredientId: string,
+    mass: number
+  ) => void;
 
   //Streams
   updateStreamLabel: (id: string, label: string) => void;
@@ -200,9 +207,8 @@ export const useStore = create<State & Action>()(
         window.handle = undefined;
       },
 
-      simulate: () => {
-        console.log("Simulating");
-        solveMassBalance();
+      toggleDebug: () => {
+        set((state) => ({ isDebug: !state.isDebug }));
       },
 
       //BLOCKS
@@ -224,6 +230,8 @@ export const useStore = create<State & Action>()(
             components: [],
             calculatedComponents: [],
             isAutoCalc: false,
+            hasError: false,
+            calculationComplete: false,
           },
         };
         set({ blocks: [...get().blocks, newNode] });
@@ -278,6 +286,33 @@ export const useStore = create<State & Action>()(
         set({ blocks: updatedBlocks });
       },
 
+      updateBlockMass: (
+        blockId: string,
+        ingredientId: string,
+        mass: number
+      ) => {
+        console.log("Block ID", blockId, "ID: ", ingredientId, " Mass: ", mass);
+        set((state) => ({
+          blocks: state.blocks.map((block) => {
+            if (block.id === blockId) {
+              return {
+                ...block,
+                data: {
+                  ...block.data,
+                  components: block.data.components.map((component) => {
+                    if (component.id === ingredientId) {
+                      return { ...component, mass: mass };
+                    }
+                    return component;
+                  }),
+                },
+              };
+            }
+            return block;
+          }),
+        }));
+      },
+
       //STREAMS
 
       updateStreamLabel: (id: string, label: string) => {
@@ -286,12 +321,11 @@ export const useStore = create<State & Action>()(
             if (edge.id === id) {
               return {
                 ...edge,
-                label: label as string,
-                labelStyle: { fill: "black" }, // Optional: add styling
+                label: label,
               };
             }
             return edge;
-          }),
+          }) as Stream[],
         });
       },
 
@@ -303,10 +337,14 @@ export const useStore = create<State & Action>()(
         set((state) => ({
           streams: applyEdgeChanges(changes, state.streams).map((edge) => ({
             ...edge,
-            components: [],
-            hasError: false,
-            calculationComplete: false,
-          })) as Stream[], // Cast to Stream[]
+            data: {
+              ...edge.data,
+              label: (edge.data?.label as string) || "",
+              calculatedComponents: [],
+              hasError: false,
+              calculationComplete: false,
+            },
+          })) as Stream[],
         }));
       },
       onConnect: (connection: Connection) => {
@@ -315,7 +353,7 @@ export const useStore = create<State & Action>()(
             {
               ...connection,
               type: "customEdge",
-              label: "",
+              // label: "",
               markerEnd: {
                 type: MarkerType.ArrowClosed,
               },

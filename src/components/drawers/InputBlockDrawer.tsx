@@ -36,6 +36,7 @@ const InputStreamDrawer = ({
     registeredComponents,
     deleteComponentFromBlock,
     updateBlockData,
+    updateBlockMass,
   } = useStore();
 
   // State for the new ingredient form
@@ -48,11 +49,9 @@ const InputStreamDrawer = ({
   const selectedNode = blocks.find((p) => p.id == selectedNodeId);
   if (!selectedNode) return;
 
-  const blockComponents = Array.isArray(selectedNode.data?.components)
-    ? selectedNode.data.components
-    : [];
+  const { label, isAutoCalc, components } = selectedNode.data;
 
-  const { label, isAutoCalc } = selectedNode.data;
+  const blockComponents = Array.isArray(components) ? components : [];
 
   //filter the ingredients that haven't already been used for the select
   const availableIngredients = registeredComponents.filter(
@@ -73,12 +72,9 @@ const InputStreamDrawer = ({
   };
 
   // Function to update the quantity of an ingredient
-  const updateQuantity = (id: string, quantity: number) => {
-    // setIngredients(
-    //   ingredients.map((ingredient) =>
-    //     ingredient.id === id ? { ...ingredient, quantity } : ingredient
-    //   )
-    // );
+  const updateMass = (id: string, mass: number) => {
+    console.log("ID: ", id, " Mass: ", mass);
+    updateBlockMass(selectedNodeId, id, mass);
   };
 
   return (
@@ -153,7 +149,7 @@ const InputStreamDrawer = ({
                             value={component.mass}
                             disabled={isAutoCalc}
                             onChange={(e) =>
-                              updateQuantity(
+                              updateMass(
                                 component.id,
                                 Number.parseInt(e.target.value) || 0
                               )

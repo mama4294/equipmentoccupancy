@@ -4,6 +4,8 @@ import {
   getBezierPath,
   type EdgeProps,
 } from "@xyflow/react";
+import { Stream } from "@/Types";
+import { useStore } from "@/Store";
 
 export default function CustomEdge({
   id,
@@ -13,9 +15,10 @@ export default function CustomEdge({
   targetY,
   sourcePosition,
   targetPosition,
+  data,
   label,
   selected,
-}: EdgeProps) {
+}: EdgeProps<Stream>) {
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -24,6 +27,8 @@ export default function CustomEdge({
     targetY,
     targetPosition,
   });
+
+  const { isDebug } = useStore();
 
   return (
     <>
@@ -60,6 +65,7 @@ export default function CustomEdge({
           }}
         >
           <p className="text-xs">{label}</p>
+          {isDebug && <pre>{JSON.stringify(data, null, 2)}</pre>}
         </div>
       </EdgeLabelRenderer>
     </>

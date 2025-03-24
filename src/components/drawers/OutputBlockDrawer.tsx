@@ -8,54 +8,53 @@ import {
 import { useStore } from "../../Store";
 import { Label } from "@/components/ui/label";
 import { Input } from "../ui/input";
-import { componentFlow, Stream } from "@/Types";
 
-const StreamDataDrawer = ({
+const OutputBlockDrawer = ({
   open,
   onOpenChange,
-  selectedEdgeId,
+  selectedNodeId,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  selectedEdgeId: string | null;
+  selectedNodeId: string | null;
 }) => {
-  const { updateStreamLabel, streams, registeredComponents } = useStore();
+  const { updateBlockData, blocks, registeredComponents } = useStore();
 
-  if (!selectedEdgeId) return;
-  const selectedEdge = streams.find((p: Stream) => p.id == selectedEdgeId);
-  if (!selectedEdge) return;
+  if (!selectedNodeId) return;
 
-  const { calculatedComponents } = selectedEdge.data!;
+  const selectedNode = blocks.find((p) => p.id == selectedNodeId);
+  if (!selectedNode) return;
 
-  // const calculatedComponents = selectedEdge.data?.calculatedComponents;
+  const { label, calculatedComponents } = selectedNode.data;
+
+  const blockComponents = Array.isArray(calculatedComponents)
+    ? calculatedComponents
+    : [];
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Stream Data</DrawerTitle>
-          <DrawerDescription>See stream data here</DrawerDescription>
+          <DrawerTitle>Output</DrawerTitle>
+          <DrawerDescription>Make changes to the output</DrawerDescription>
         </DrawerHeader>
+
         <div className="p-4 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="node-description">Label</Label>
+            <Label htmlFor="node-label">Label</Label>
             <Input
-              id="edge-label"
-              value={(selectedEdge.label as string) || ""}
+              id="node-label"
+              value={label}
               onChange={(e) =>
-                updateStreamLabel(selectedEdgeId, e.target.value)
+                updateBlockData(selectedNodeId, {
+                  ...selectedNode.data,
+                  label: e.target.value,
+                })
               }
             />
           </div>
-          <div
-            className="grid grid-cols-12 gap-2 p-3 font-medium border-b"
-            id="components"
-          >
-            <div className="col-span-5">Ingredient</div>
-            <div className="col-span-4">Mass</div>
-            <div className="col-span-3"></div>
-          </div>
-          {calculatedComponents!.map((component: componentFlow) => (
+          <Label htmlFor="components">Ingredients</Label>
+          {blockComponents.map((component) => (
             <div
               key={component.id}
               className="grid grid-cols-12 gap-2 p-3 border-b"
@@ -76,4 +75,4 @@ const StreamDataDrawer = ({
   );
 };
 
-export default StreamDataDrawer;
+export default OutputBlockDrawer;

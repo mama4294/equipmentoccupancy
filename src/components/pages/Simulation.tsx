@@ -39,9 +39,11 @@ import { BlockTypes as BlockType, BlockTypes } from "@/Types";
 import { useDarkModeTheme } from "../themes/DarkMode/DarkModeProvider";
 import { Button } from "../ui/button";
 import { Target } from "lucide-react";
-import EditProcedureDrawer from "../drawers/procedureDrawer";
-import InputStreamDrawer from "../drawers/InputStreamDrawer";
+import InputStreamDrawer from "../drawers/InputBlockDrawer";
 import StreamDataDrawer from "../drawers/StreamDrawer";
+import OutputBlockDrawer from "../drawers/OutputBlockDrawer";
+import { useSolveMassBalance } from "../../lib/useSolveMassBalance";
+import EditProcedureDrawer from "../drawers/ProcedureDrawer";
 
 const nodeTypes: NodeTypes = {
   unitOperation: UnitOpNode,
@@ -69,7 +71,8 @@ export default function BlockFlowDiagram() {
     onConnect,
     addBlock,
     deleteSelectedElements,
-    simulate,
+    isDebug,
+    toggleDebug,
   } = useStore();
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -77,17 +80,20 @@ export default function BlockFlowDiagram() {
   const [isProcedureDrawerOpen, setIsProcedureDrawerOpen] = useState(false);
   const [isStreamDrawerOpen, setIsStreamDrawerOpen] = useState(false);
   const [isInputDrawerOpen, setIsInputDrawerOpen] = useState(false);
+  const [isOutputDrawerOpen, setIsOutputDrawerOpen] = useState(false);
   const [BFDBackground, setBFDBackground] = useState(BackgroundVariant.Dots);
+
+  const { solveMassBalance } = useSolveMassBalance();
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
     setIsStreamDrawerOpen(false);
 
     //determine what type of node was clicked
-    if (node.type == "inputNode") {
+    if (node.type == BlockType.InputNode) {
       setIsInputDrawerOpen(true);
-      console.log("Input");
-      //open input editor
+    } else if (node.type == BlockType.OutputNode) {
+      setIsOutputDrawerOpen(true);
     } else setIsProcedureDrawerOpen(true);
   }, []);
 
@@ -101,6 +107,10 @@ export default function BlockFlowDiagram() {
     const { clientX, clientY } = event;
     addBlock(type, { x: clientX, y: clientY });
   };
+
+  const simulate = useCallback(() => {
+    solveMassBalance();
+  }, [solveMassBalance]);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -162,6 +172,10 @@ export default function BlockFlowDiagram() {
                 onClick={() => setBFDBackground(BackgroundVariant.Cross)}
               >
                 Cross
+              </MenubarCheckboxItem>
+              <MenubarSeparator />
+              <MenubarCheckboxItem checked={isDebug} onClick={toggleDebug}>
+                Debug Mode
               </MenubarCheckboxItem>
             </MenubarContent>
           </MenubarMenu>
@@ -230,6 +244,11 @@ export default function BlockFlowDiagram() {
           <InputStreamDrawer
             open={isInputDrawerOpen}
             onOpenChange={setIsInputDrawerOpen}
+            selectedNodeId={selectedNodeId}
+          />
+          <OutputBlockDrawer
+            open={isOutputDrawerOpen}
+            onOpenChange={setIsOutputDrawerOpen}
             selectedNodeId={selectedNodeId}
           />
         </div>
