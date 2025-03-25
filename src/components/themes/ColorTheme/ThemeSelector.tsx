@@ -15,8 +15,6 @@ export function ThemeSelector() {
   const currentColor =
     colorOptions.find((color) => color.value === theme) || colorOptions[0];
 
-  console.log(currentColor);
-
   return (
     <Select onValueChange={(value: ColorTheme) => setTheme(value)}>
       <SelectTrigger className="w-[180px]">

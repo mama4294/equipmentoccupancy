@@ -1,5 +1,7 @@
 import { Handle, NodeProps, Position } from "@xyflow/react";
-import { Block } from "@/Types";
+import { Block, BlockData } from "@/Types";
+import { useStore } from "@/Store";
+import { cn } from "@/lib/utils";
 
 //TODO: enfore only 1 stream per handle
 
@@ -11,21 +13,21 @@ export interface ProcessIO {
 
 export interface ProcessNodeProps {
   title: string;
-  equipment?: string;
   inputs: ProcessIO[];
   outputs: ProcessIO[];
-  additionalData?: Record<string, any>;
+  data: BlockData;
   selected: Boolean;
 }
 
 export const ProcessNode = ({
   title,
-  equipment,
   inputs,
   outputs,
-  additionalData,
+  data,
   selected,
 }: ProcessNodeProps) => {
+  const { isDebug } = useStore();
+
   // Dimensions for positioning
   const innerWidth = 240;
   const innerHeight = 120;
@@ -135,9 +137,13 @@ export const ProcessNode = ({
 
       {/* Inner process block */}
       <div
-        className={`absolute px-4 py-2 shadow-md rounded-md border-2 border-primary bg-background cursor-pointer ${
+        className={cn(
+          "absolute px-4 py-2 shadow-md rounded-md border-2 border-primary bg-background cursor-pointer",
+          data.hasError
+            ? "bg-destructive text-destructive-foreground"
+            : "bg-background",
           selected ? "border-selected" : "border-primary"
-        }`}
+        )}
         style={{
           left: outerPadding + handleDistance,
           top: outerPadding,
@@ -146,13 +152,21 @@ export const ProcessNode = ({
         }}
       >
         <div className="text-center p-4">
-          <h3 className="font-bold text-lg text-primary">{title}</h3>
-          {equipment && (
-            <p className="text-sm text-muted-foreground">{equipment}</p>
-          )}
-
+          <h3 className="font-bold text-lg">{title}</h3>
+          <p className="text-sm">{data.equipment}</p>
           {/* Render additional data if provided */}
-          {additionalData && Object.entries(additionalData).length > 0 && (
+          {isDebug && (
+            <pre
+              className={cn(
+                data.hasError
+                  ? "bg-destructive text-destructive-foreground"
+                  : "bg-background"
+              )}
+            >
+              {JSON.stringify(data, null, 2)}
+            </pre>
+          )}
+          {/* {additionalData && Object.entries(additionalData).length > 0 && (
             <div className="mt-2 pt-2 border-t border-border text-xs">
               {Object.entries(additionalData).map(([key, value]) => (
                 <div key={key} className="flex justify-between gap-2">
@@ -161,7 +175,7 @@ export const ProcessNode = ({
                 </div>
               ))}
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>

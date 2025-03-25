@@ -1,22 +1,21 @@
 import { memo } from "react";
-import { Handle, NodeProps, Position } from "@xyflow/react";
+import { NodeProps } from "@xyflow/react";
 import { Block } from "@/Types";
-import { ProcessNode, ProcessNodeProps } from "./processNode";
+import { ProcessNode } from "./processNode";
 
 function Mixer({ data, selected }: NodeProps<Block>) {
   const inputs = [
-    { id: "1", label: "Feed" },
-    { id: "2", label: "Dilutant" },
+    { id: "input1", label: "Feed" },
+    { id: "input2", label: "Dilutant" },
   ];
-  const outputs = [{ id: "3", label: "Mixture" }];
+  const outputs = [{ id: "output1", label: "Mixture" }];
 
   return (
     <ProcessNode
       title={"Mixer"}
-      equipment={data.equipment}
       inputs={inputs}
       outputs={outputs}
-      additionalData={[]}
+      data={data}
       selected={selected}
     />
   );

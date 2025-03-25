@@ -291,7 +291,6 @@ export const useStore = create<State & Action>()(
         ingredientId: string,
         mass: number
       ) => {
-        console.log("Block ID", blockId, "ID: ", ingredientId, " Mass: ", mass);
         set((state) => ({
           blocks: state.blocks.map((block) => {
             if (block.id === blockId) {
