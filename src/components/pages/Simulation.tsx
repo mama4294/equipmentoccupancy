@@ -44,6 +44,7 @@ import StreamDataDrawer from "../drawers/StreamDrawer";
 import OutputBlockDrawer from "../drawers/OutputBlockDrawer";
 import { useSolveMassBalance } from "../../lib/useSolveMassBalance";
 import EditProcedureDrawer from "../drawers/ProcedureDrawer";
+import NodeInspector from "../blocks/NodeInspector";
 
 const nodeTypes: NodeTypes = {
   unitOperation: UnitOpNode,
@@ -200,6 +201,7 @@ export default function BlockFlowDiagram() {
                 edgeTypes={edgeTypes}
                 colorMode={theme}
               >
+                {isDebug && <NodeInspector />}
                 <Controls />
                 <MiniMap />
                 <Background variant={BFDBackground} gap={12} size={1} />

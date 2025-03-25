@@ -12,7 +12,7 @@ import { useState } from "react";
 import InputBlockDrawer from "../drawers/InputBlockDrawer";
 
 function InputNode({ data, selected, id }: NodeProps<Block>) {
-  const { isDebug, deleteBlock } = useStore();
+  const { deleteBlock } = useStore();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
@@ -24,7 +24,6 @@ function InputNode({ data, selected, id }: NodeProps<Block>) {
           }`}
         >
           <div className="font-bold">{data.label}</div>
-          {isDebug && <pre>{JSON.stringify(data, null, 2)}</pre>}
           <Handle type="source" position={Position.Right} className="w-3 h-3" />
         </div>
       </ContextMenuTrigger>

@@ -13,7 +13,7 @@ import OutputBlockDrawer from "../drawers/OutputBlockDrawer";
 import { useState } from "react";
 
 function OutputNode({ data, selected, id }: NodeProps<Block>) {
-  const { isDebug, deleteBlock } = useStore();
+  const { deleteBlock } = useStore();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   return (
     <ContextMenu>
@@ -29,7 +29,6 @@ function OutputNode({ data, selected, id }: NodeProps<Block>) {
         >
           <Handle type="target" position={Position.Left} className="w-3 h-3" />
           <div className="font-bold">{data.label}</div>
-          {isDebug && <pre>{JSON.stringify(data, null, 2)}</pre>}
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>

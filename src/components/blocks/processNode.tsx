@@ -26,8 +26,6 @@ export const ProcessNode = ({
   data,
   selected,
 }: ProcessNodeProps) => {
-  const { isDebug } = useStore();
-
   // Dimensions for positioning
   const innerWidth = 240;
   const innerHeight = 120;
@@ -154,28 +152,6 @@ export const ProcessNode = ({
         <div className="text-center p-4">
           <h3 className="font-bold text-lg">{title}</h3>
           <p className="text-sm">{data.equipment}</p>
-          {/* Render additional data if provided */}
-          {isDebug && (
-            <pre
-              className={cn(
-                data.hasError
-                  ? "bg-destructive text-destructive-foreground"
-                  : "bg-background"
-              )}
-            >
-              {JSON.stringify(data, null, 2)}
-            </pre>
-          )}
-          {/* {additionalData && Object.entries(additionalData).length > 0 && (
-            <div className="mt-2 pt-2 border-t border-border text-xs">
-              {Object.entries(additionalData).map(([key, value]) => (
-                <div key={key} className="flex justify-between gap-2">
-                  <span className="font-medium">{key}:</span>
-                  <span>{value}</span>
-                </div>
-              ))}
-            </div>
-          )} */}
         </div>
       </div>
     </div>
