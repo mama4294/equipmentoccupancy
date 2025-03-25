@@ -127,6 +127,7 @@ type Action = {
   onStreamsChange: OnEdgesChange;
   onConnect: OnConnect;
   addBlock: (type: BlockTypes, position: XYPosition) => void;
+  deleteBlock: (id: string) => void;
   updateBlockData: (id: string, data: BlockData) => void;
   addComponentToBlock: (id: string, data: componentFlow) => void;
   deleteComponentFromBlock: (blockId: string, componentId: string) => void;
@@ -221,7 +222,7 @@ export const useStore = create<State & Action>()(
       addBlock: (type: BlockTypes, position: XYPosition) => {
         //TODO add case type and differentite between adds
         const newNode: Block = {
-          id: `${get().blocks.length + 1}`,
+          id: uuidv4(),
           type,
           position,
           data: {
@@ -235,6 +236,12 @@ export const useStore = create<State & Action>()(
           },
         };
         set({ blocks: [...get().blocks, newNode] });
+      },
+
+      deleteBlock: (id: string) => {
+        set((state) => ({
+          blocks: state.blocks.filter((block) => block.id !== id),
+        }));
       },
 
       updateBlockData: (id: string, newData: BlockData) => {
