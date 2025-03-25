@@ -5,8 +5,8 @@ import { ProcessNode } from "./processNode";
 
 function Mixer({ data, selected }: NodeProps<Block>) {
   const inputs = [
-    { id: "input1", label: "Feed" },
-    { id: "input2", label: "Dilutant" },
+    { id: "input1", label: "Input 1" },
+    { id: "input2", label: "Input 2" },
   ];
   const outputs = [{ id: "output1", label: "Mixture" }];
 
