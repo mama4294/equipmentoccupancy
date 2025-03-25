@@ -9,9 +9,12 @@ import {
   ContextMenuShortcut,
   ContextMenuTrigger,
 } from "../ui/context-menu";
+import OutputBlockDrawer from "../drawers/OutputBlockDrawer";
+import { useState } from "react";
 
 function OutputNode({ data, selected, id }: NodeProps<Block>) {
   const { isDebug, deleteBlock } = useStore();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   return (
     <ContextMenu>
       <ContextMenuTrigger>
@@ -30,7 +33,9 @@ function OutputNode({ data, selected, id }: NodeProps<Block>) {
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuItem>Edit</ContextMenuItem>
+        <ContextMenuItem onClick={() => setIsDrawerOpen(true)}>
+          Edit
+        </ContextMenuItem>
         <ContextMenuItem>
           Copy
           <ContextMenuShortcut>⌘C</ContextMenuShortcut>
@@ -39,6 +44,11 @@ function OutputNode({ data, selected, id }: NodeProps<Block>) {
           Delete
         </ContextMenuItem>
       </ContextMenuContent>
+      <OutputBlockDrawer
+        open={isDrawerOpen}
+        onOpenChange={setIsDrawerOpen}
+        selectedNodeId={id}
+      />
     </ContextMenu>
   );
 }

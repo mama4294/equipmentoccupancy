@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { NodeProps } from "@xyflow/react";
 import { Block } from "@/Types";
 import { ProcessNode } from "./processNode";
@@ -10,9 +10,11 @@ import {
   ContextMenuTrigger,
 } from "../ui/context-menu";
 import { useStore } from "@/Store";
+import EditProcedureDrawer from "../drawers/ProcedureDrawer";
 
 function Mixer({ data, selected, id }: NodeProps<Block>) {
   const { deleteBlock } = useStore();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const inputs = [
     { id: "input1", label: "Input 1" },
@@ -32,7 +34,9 @@ function Mixer({ data, selected, id }: NodeProps<Block>) {
         />
       </ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuItem>Edit</ContextMenuItem>
+        <ContextMenuItem onClick={() => setIsDrawerOpen(true)}>
+          Edit
+        </ContextMenuItem>
         <ContextMenuItem>
           Copy
           <ContextMenuShortcut>⌘C</ContextMenuShortcut>
@@ -41,6 +45,11 @@ function Mixer({ data, selected, id }: NodeProps<Block>) {
           Delete
         </ContextMenuItem>
       </ContextMenuContent>
+      <EditProcedureDrawer
+        open={isDrawerOpen}
+        onOpenChange={setIsDrawerOpen}
+        selectedNodeId={id}
+      />
     </ContextMenu>
   );
 }
