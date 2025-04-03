@@ -110,6 +110,7 @@ const initialState: State = {
     { id: "3", name: "Electricity", unit: "kW" },
     { id: "4", name: "CIP", unit: "lpm" },
   ],
+  clipboard: { blocks: [], streams: [] },
   isDebug: true,
 };
 
@@ -137,6 +138,8 @@ type Action = {
     ingredientId: string,
     mass: number
   ) => void;
+  setClipboard: () => void;
+  onPaste: () => void;
 
   //Streams
   updateStreamLabel: (id: string, label: string) => void;
@@ -318,6 +321,56 @@ export const useStore = create<State & Action>()(
           }),
         }));
       },
+      setClipboard: () => {
+        set((state) => ({
+          clipboard: {
+            blocks: state.blocks.filter((block) => block.selected),
+            streams: state.streams.filter((stream) => stream.selected),
+          },
+        }));
+      },
+      // This function is used to paste the copied blocks and streams
+      onPaste: () => {
+        // Create a map to store the old and new IDs
+        const idMap: { [key: string]: string } = {};
+        // Generate new blocks with new IDs and updated positions
+        const newBlocks = get().clipboard.blocks.map((block: Block) => {
+          const newId = uuidv4(); // generate new ID
+          idMap[block.id] = newId; // store the old and new IDs in the map
+          return {
+            ...block,
+            position: { x: block.position.x + 20, y: block.position.y + 10 },
+            selected: true,
+            id: newId,
+          };
+        });
+        // Deselect all old blocks and streams
+        const deselectedBlocks = get().blocks.map((block) => ({
+          ...block,
+          selected: false,
+        }));
+        const deselectedStreams = get().streams.map((stream) => ({
+          ...stream,
+          selected: false,
+        }));
+        // Update the state with the new blocks and streams, and deselected old ones
+        set(() => ({
+          blocks: [...deselectedBlocks, ...newBlocks],
+          streams: [
+            ...deselectedStreams,
+            // Generate new streams with new IDs and updated source and target IDs
+            ...get().clipboard.streams.map((stream) => ({
+              ...stream,
+              sourceHandle: stream.sourceHandle,
+              targetHandle: stream.targetHandle,
+              source: idMap[stream.source] || stream.source,
+              target: idMap[stream.target] || stream.target,
+              id: uuidv4(), // generate new ID
+              selected: true, // Ensure new streams are selected
+            })),
+          ],
+        }));
+      },
 
       //STREAMS
 
@@ -363,6 +416,7 @@ export const useStore = create<State & Action>()(
         }));
       },
       onConnect: (connection: Connection) => {
+        console.log("Connection: ", connection);
         set({
           streams: addEdge(
             {

@@ -9,6 +9,7 @@ export type State = {
   streams: Stream[];
   registeredComponents: ComponentProperties[];
   mixtures: Mixture[];
+  clipboard: { blocks: Block[]; streams: Stream[] };
   isDebug: boolean;
 };
 

@@ -74,6 +74,8 @@ export default function BlockFlowDiagram() {
     deleteSelectedElements,
     isDebug,
     toggleDebug,
+    setClipboard,
+    onPaste,
   } = useStore();
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -200,6 +202,8 @@ export default function BlockFlowDiagram() {
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
                 colorMode={theme}
+                onCopy={setClipboard}
+                onPaste={onPaste}
               >
                 {isDebug && <NodeInspector />}
                 <Controls />
