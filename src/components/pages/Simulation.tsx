@@ -9,6 +9,8 @@ import {
   BackgroundVariant,
   Edge,
   EdgeTypes,
+  useReactFlow,
+  ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Card } from "../ui/card";
@@ -61,7 +63,8 @@ const edgeTypes: EdgeTypes = {
 //TODO: highlight selected block
 //TODO: connect operations to equipment.
 
-export default function BlockFlowDiagram() {
+const BlockFlowContent = () => {
+  const { screenToFlowPosition } = useReactFlow();
   const { theme } = useDarkModeTheme();
 
   const {
@@ -92,7 +95,6 @@ export default function BlockFlowDiagram() {
     setSelectedNodeId(node.id);
     setIsStreamDrawerOpen(false);
 
-    //determine what type of node was clicked
     if (node.type == BlockType.InputNode) {
       setIsInputDrawerOpen(true);
     } else if (node.type == BlockType.OutputNode) {
@@ -108,7 +110,8 @@ export default function BlockFlowDiagram() {
 
   const onAddBlock = (event: React.MouseEvent, type: BlockType) => {
     const { clientX, clientY } = event;
-    addBlock(type, { x: clientX, y: clientY });
+    const pos = screenToFlowPosition({ x: clientX, y: clientY });
+    addBlock(type, pos);
   };
 
   const simulate = useCallback(() => {
@@ -116,7 +119,7 @@ export default function BlockFlowDiagram() {
   }, [solveMassBalance]);
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <>
       <div className="flex justify-between align-top flex-wrap">
         <h1 className="text-2xl font-bold mb-2">Simulation</h1>
         <Button onClick={simulate}>
@@ -195,8 +198,6 @@ export default function BlockFlowDiagram() {
                 onNodesChange={onBlocksChange}
                 onEdgesChange={onStreamsChange}
                 onConnect={onConnect}
-                // onNodeClick={onNodeClick}
-                //onEdgeClick={onEdgeClick}
                 onNodeDoubleClick={onNodeClick}
                 onEdgeDoubleClick={onEdgeClick}
                 nodeTypes={nodeTypes}
@@ -259,6 +260,16 @@ export default function BlockFlowDiagram() {
           />
         </div>
       </Card>
+    </>
+  );
+};
+
+export default function BlockFlowDiagram() {
+  return (
+    <div className="w-full h-full flex flex-col">
+      <ReactFlowProvider>
+        <BlockFlowContent />
+      </ReactFlowProvider>
     </div>
   );
 }
