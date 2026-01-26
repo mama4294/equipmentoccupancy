@@ -1,2 +1,2 @@
 export const MIN_BATCHES_PER_CAMPAIGN = 1;
-export const MAX_BATCHES_PER_CAMPAIGN = 5;
+export const MAX_BATCHES_PER_CAMPAIGN = 10;
