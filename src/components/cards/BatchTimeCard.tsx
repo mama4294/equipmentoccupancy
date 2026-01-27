@@ -24,7 +24,7 @@ const BatchTimeCard = ({ details }: { details: ProcessDetails }) => {
         <div className="mb-2">
           <div className="flex justify-between items-baseline">
             <span className="text-sm font-medium ">
-              Single batch cycle time
+              Batch Time
             </span>
             <div className="flex items-baseline gap-1 text-3xl font-bold tabular-nums leading-none">
               {batchTiming.value}
@@ -36,7 +36,7 @@ const BatchTimeCard = ({ details }: { details: ProcessDetails }) => {
         {batchQty > 1 && (
           <div className="mb-2">
             <div className="flex justify-between items-baseline">
-              <span className="text-sm font-medium ">New batch every</span>
+              <span className="text-sm font-medium ">Cycle Time</span>
               <div className="flex items-baseline gap-1 text-3xl font-bold tabular-nums leading-none">
                 {staggerTime.value}
                 <span className="text-sm font-normal">{staggerTime.unit}</span>
