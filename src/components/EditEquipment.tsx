@@ -91,10 +91,20 @@ const EditProcedure = ({
   }, [equipmentToEdit]);
 
   const handleAddOperation = () => {
-    setEquipment((prev) => ({
-      ...prev,
-      operations: [...prev.operations, { ...initialOperation, id: uuidv4() }],
-    }));
+    setEquipment((prev) => {
+      const newOperation = {
+        ...initialOperation,
+        id: uuidv4(),
+        predecessorId:
+          prev.operations.length > 0
+            ? prev.operations[prev.operations.length - 1].id
+            : "initial",
+      };
+      return {
+        ...prev,
+        operations: [...prev.operations, newOperation],
+      };
+    });
   };
 
   const handleRemoveOperation = (id: string) => {
@@ -107,12 +117,12 @@ const EditProcedure = ({
   const handleOperationChange = (
     id: string,
     field: keyof Operation,
-    value: any
+    value: any,
   ) => {
     setEquipment((prev) => ({
       ...prev,
       operations: prev.operations.map((op) =>
-        op.id === id ? { ...op, [field]: value } : op
+        op.id === id ? { ...op, [field]: value } : op,
       ),
     }));
   };
@@ -126,7 +136,7 @@ const EditProcedure = ({
               ...op,
               resources: [...op.resources, resource],
             }
-          : op
+          : op,
       ),
     }));
   };
@@ -140,7 +150,7 @@ const EditProcedure = ({
               ...op,
               resources: op.resources.filter((r) => r.id !== resourceId),
             }
-          : op
+          : op,
       ),
     }));
   };
@@ -148,7 +158,7 @@ const EditProcedure = ({
   const handleResourceChange = (
     operationId: string,
     resourceId: string,
-    updatedResource: Resource
+    updatedResource: Resource,
   ) => {
     setEquipment((prev) => ({
       ...prev,
@@ -157,10 +167,10 @@ const EditProcedure = ({
           ? {
               ...op,
               resources: op.resources.map((r) =>
-                r.id === resourceId ? updatedResource : r
+                r.id === resourceId ? updatedResource : r,
               ),
             }
-          : op
+          : op,
       ),
     }));
   };
@@ -173,17 +183,6 @@ const EditProcedure = ({
     }
     setIsOpen(false);
   };
-
-  useEffect(() => {
-    // Update predecessors when operations change
-    setEquipment((prev) => ({
-      ...prev,
-      operations: prev.operations.map((op, index) => ({
-        ...op,
-        predecessorId: index === 0 ? "initial" : prev.operations[index - 1].id,
-      })),
-    }));
-  }, [equipment.operations.length]);
 
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
@@ -247,7 +246,7 @@ const EditProcedure = ({
                             handleOperationChange(
                               operation.id,
                               "name",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           placeholder="Name"
@@ -263,7 +262,7 @@ const EditProcedure = ({
                               handleOperationChange(
                                 operation.id,
                                 "duration",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             min={1}
@@ -276,7 +275,7 @@ const EditProcedure = ({
                                 handleOperationChange(
                                   operation.id,
                                   "durationUnit",
-                                  value
+                                  value,
                                 )
                               }
                             >
@@ -306,7 +305,7 @@ const EditProcedure = ({
                             handleOperationChange(
                               operation.id,
                               "predecessorId",
-                              value
+                              value,
                             );
                           }}
                         >
@@ -333,7 +332,7 @@ const EditProcedure = ({
                                       {optionText}
                                     </SelectItem>
                                   );
-                                })
+                                }),
                               )
                               .filter(
                                 (item, index, self) =>
@@ -342,8 +341,8 @@ const EditProcedure = ({
                                   index ===
                                     self.findIndex(
                                       (t) =>
-                                        t && t.props.value === item.props.value
-                                    )
+                                        t && t.props.value === item.props.value,
+                                    ),
                               )}
                           </SelectContent>
                         </Select>
@@ -355,7 +354,7 @@ const EditProcedure = ({
                             handleOperationChange(
                               operation.id,
                               "predecessorRelation",
-                              value
+                              value,
                             )
                           }
                         >
@@ -389,7 +388,7 @@ const EditProcedure = ({
                               handleOperationChange(
                                 operation.id,
                                 "offset",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             min={1}
@@ -402,7 +401,7 @@ const EditProcedure = ({
                                 handleOperationChange(
                                   operation.id,
                                   "offsetUnit",
-                                  value
+                                  value,
                                 )
                               }
                             >
@@ -431,7 +430,7 @@ const EditProcedure = ({
                           {operation.resources.map((resource) => {
                             const resourceData = resourceOptions.find(
                               (o: ResourceOption) =>
-                                o.id === resource.resourceOptionId
+                                o.id === resource.resourceOptionId,
                             );
 
                             return (
@@ -452,13 +451,13 @@ const EditProcedure = ({
                                       handleResourceChange(
                                         operation.id,
                                         resource.id,
-                                        editedResource
+                                        editedResource,
                                       );
                                     }}
                                     onDelete={() =>
                                       handleRemoveResource(
                                         operation.id,
-                                        resource.id
+                                        resource.id,
                                       )
                                     }
                                   />
@@ -538,7 +537,7 @@ const ResourceForm = ({
   };
 
   const [formData, setFormData] = useState<Resource>(
-    resource || initialResource
+    resource || initialResource,
   );
 
   const handleSubmit = (e: React.FormEvent) => {
