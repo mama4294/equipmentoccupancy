@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import { Plus, PlusCircle, Trash2 } from "lucide-react";
+import { Plus, PlusCircle, Trash2, Minus } from "lucide-react";
 import { Input } from "./ui/input";
 import { useStore } from "../Store";
 
@@ -79,6 +79,7 @@ const EditProcedure = ({
   const initialEquipment: Equipment = {
     id: uuidv4(),
     name: "",
+    quantity: 1,
     operations: [initialOperation],
   };
 
@@ -211,7 +212,7 @@ const EditProcedure = ({
         </DrawerHeader>
         <div className="p-4 pb-0">
           <div className="grid w-full items-center gap-4">
-            <div className="flex flex-col space-y-1.5 mb-12">
+            <div className="flex flex-col space-y-1.5 mb-4">
               <Label htmlFor="title">Equipment Name</Label>
               <Input
                 id="title"
@@ -221,6 +222,53 @@ const EditProcedure = ({
                   setEquipment((prev) => ({ ...prev, name: e.target.value }))
                 }
               />
+            </div>
+            <div className="flex flex-col space-y-1.5 mb-8">
+              <Label htmlFor="quantity">Quantity</Label>
+              <div className="flex items-center gap-2 w-fit">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() =>
+                    setEquipment((prev) => ({
+                      ...prev,
+                      quantity: Math.max(1, prev.quantity - 1),
+                    }))
+                  }
+                  disabled={equipment.quantity <= 1}
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <Input
+                  id="quantity"
+                  type="number"
+                  min={0}
+                  max={10}
+                  value={equipment.quantity}
+                  onChange={(e) =>
+                    setEquipment((prev) => ({ 
+                      ...prev, 
+                      quantity: Math.min(10, Math.max(0, Number(e.target.value))) 
+                    }))
+                  }
+                  className="w-20 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() =>
+                    setEquipment((prev) => ({
+                      ...prev,
+                      quantity: Math.min(10, prev.quantity + 1),
+                    }))
+                  }
+                  disabled={equipment.quantity >= 10}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
             <Label htmlFor="operations">Operations</Label>
             <div id="operations">

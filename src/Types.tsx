@@ -57,6 +57,7 @@ export interface Operation {
 export type Equipment = {
   id: string;
   name: string;
+  quantity: number;
   operations: Operation[];
 };
 
@@ -78,6 +79,7 @@ export type ProcessDetails = {
   batchDuration: number; //seconds
   campaignDuration: number; //seconds
   batchQty: number;
+  cycleTime: number; //seconds
 };
 
 export type Timepoint = { time: number; value: number };

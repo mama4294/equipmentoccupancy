@@ -41,6 +41,7 @@ export default function EOChart({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // New state for the drawer
   const [selectedEquipment, setSelectedEquipment] =
     useState<Equipment | null>();
+  const { equipment: equipmentList } = useStore();
 
   console.log("equipmentWithTiming: ", equipmentWithTiming);
 
@@ -58,15 +59,24 @@ export default function EOChart({
       </CardHeader>
       <CardContent>
         <div className="relative">
-          {equipmentWithTiming.map((equipment) => (
-            <EquipmentRow
-              key={equipment.id}
-              equipmentWithTiming={equipment}
-              maxDuration={maxDuration}
-              setSelectedEquipment={setSelectedEquipment}
-              setIsDrawerOpen={setIsDrawerOpen}
-            />
-          ))}
+          {equipmentWithTiming.flatMap((equipment) => {
+            const equipmentData = equipmentList.find(
+              (eq: Equipment) => eq.id === equipment.id
+            );
+            const quantity = equipmentData?.quantity || 1;
+            
+            return Array.from({ length: quantity }, (_, index) => (
+              <EquipmentRow
+                key={`${equipment.id}-${index}`}
+                equipmentWithTiming={equipment}
+                maxDuration={maxDuration}
+                setSelectedEquipment={setSelectedEquipment}
+                setIsDrawerOpen={setIsDrawerOpen}
+                instanceNumber={index + 1}
+                totalInstances={quantity}
+              />
+            ));
+          })}
         </div>
       </CardContent>
       <CardFooter>
@@ -88,11 +98,15 @@ const EquipmentRow: React.FC<{
   setSelectedEquipment: React.Dispatch<
     React.SetStateAction<Equipment | null | undefined>
   >;
+  instanceNumber: number;
+  totalInstances: number;
 }> = ({
   equipmentWithTiming,
   maxDuration,
   setIsDrawerOpen,
   setSelectedEquipment,
+  instanceNumber,
+  totalInstances,
 }) => {
   const {
     deleteEquipment,
@@ -113,49 +127,51 @@ const EquipmentRow: React.FC<{
   return (
     <div className="relative h-8 mb-2">
       <div className="absolute left-0 w-32 pr-2 text-sm font-medium text-right flex items-center justify-end h-full">
-        {equipmentWithoutTiming.name}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="h-8 w-8 p-0 ml-2">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => {
-                setSelectedEquipment(equipmentWithoutTiming);
-                setIsDrawerOpen(true);
-              }}
-            >
-              <Edit className="mr-2 h-4 w-4" />
-              <span>Edit</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => deleteEquipment(equipmentWithoutTiming)}
-            >
-              <Trash className="mr-2 h-4 w-4" />
-              <span>Delete</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => duplicateEquipment(equipmentWithoutTiming)}
-            >
-              <Copy className="mr-2 h-4 w-4" />
-              <span>Duplicate</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => moveEquipmentUp(equipmentWithoutTiming.id)}
-            >
-              <ChevronUp className="mr-2 h-4 w-4" />
-              <span>Move Up</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => moveEquipmentDown(equipmentWithoutTiming.id)}
-            >
-              <ChevronDown className="mr-2 h-4 w-4" />
-              <span>Move Down</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {totalInstances > 1 ? `${equipmentWithoutTiming.name} #${instanceNumber}` : equipmentWithoutTiming.name}
+        {instanceNumber === 1 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="h-8 w-8 p-0 ml-2">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  setSelectedEquipment(equipmentWithoutTiming);
+                  setIsDrawerOpen(true);
+                }}
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                <span>Edit</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => deleteEquipment(equipmentWithoutTiming)}
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                <span>Delete</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => duplicateEquipment(equipmentWithoutTiming)}
+              >
+                <Copy className="mr-2 h-4 w-4" />
+                <span>Duplicate</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => moveEquipmentUp(equipmentWithoutTiming.id)}
+              >
+                <ChevronUp className="mr-2 h-4 w-4" />
+                <span>Move Up</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => moveEquipmentDown(equipmentWithoutTiming.id)}
+              >
+                <ChevronDown className="mr-2 h-4 w-4" />
+                <span>Move Down</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
       <div
         className="absolute left-32 right-0 h-full bg-secondary"
@@ -164,8 +180,18 @@ const EquipmentRow: React.FC<{
           setIsDrawerOpen(true);
         }}
       >
-        {equipmentWithTiming.operations.map(
-          (operation: OperationWithTiming) => (
+        {equipmentWithTiming.operations
+          .filter((operation: OperationWithTiming) => {
+            // If only one instance, show all operations
+            if (totalInstances === 1) return true;
+            
+            // Round-robin: assign batch to instance based on (batchNumber - 1) % totalInstances
+            // Instance 1 gets batches 1, 3, 5... (batchNumber % totalInstances === 1)
+            // Instance 2 gets batches 2, 4, 6... (batchNumber % totalInstances === 2)
+            const assignedInstance = ((operation.batchNumber - 1) % totalInstances) + 1;
+            return assignedInstance === instanceNumber;
+          })
+          .map((operation: OperationWithTiming) => (
             <OperationBar
               key={operation.id}
               operation={operation}

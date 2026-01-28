@@ -131,14 +131,28 @@ export const calculateTiming = (
   let offset = maxEquipmentDuration;
   if (campaign.schedulingType === "fixed") {
     offset = convertToSeconds(campaign.frequency, campaign.frequencyUnit);
+  } else {
+    // For optimized scheduling, calculate the minimum offset considering equipment quantities
+    // The bottleneck is the equipment with the longest duration divided by its quantity
+    offset = Math.max(
+      ...equipment.map((eq) => {
+        const eqDuration = singleBatch.find((sb) => sb.id === eq.id)?.duration || 0;
+        const quantity = eq.quantity || 1;
+        return eqDuration / quantity;
+      })
+    );
   }
 
   // Loop through each equipment
   for (let i = 0; i < multipleBatches.length; i++) {
     const newOperations = [...multipleBatches[i].operations];
+    const equipmentData = equipment.find((eq) => eq.id === multipleBatches[i].id);
+    const quantity = equipmentData?.quantity || 1;
 
     // Add copies of each operation to the equipment for each additional batch with a batch offset
     for (let batchIndex = 1; batchIndex < campaign.quantity; batchIndex++) {
+      // For equipment with quantity > 1, batches are distributed round-robin
+      // So the offset for a batch depends on how many batches before it used this equipment instance
       const batchOffset = batchIndex * offset;
 
       const batchOperations = multipleBatches[i].operations.map(
@@ -187,12 +201,14 @@ export const calculateProcessDetails = (
   const batchDuration = calculateBatchDuration(equipment);
   const campaignDuration = calculateCampaignDuration(equipment);
   const batchQty = calculateBatchQuantity(equipment[0]);
+  const cycleTime = calculateCycleTime(equipment);
 
   return {
     bottleneck,
     batchDuration,
     campaignDuration,
     batchQty,
+    cycleTime,
   };
 };
 
@@ -241,6 +257,30 @@ const calculateBatchQuantity = (equipment: EquipmentWithTiming): number => {
   });
 
   return batchQty;
+};
+
+const calculateCycleTime = (equipment: EquipmentWithTiming[]): number => {
+  // Cycle time is the time between when batch 1 starts and when batch 2 starts
+  let batch1Start = Infinity;
+  let batch2Start = Infinity;
+
+  equipment.forEach((eq) => {
+    eq.operations.forEach((op) => {
+      if (op.batchNumber === 1) {
+        batch1Start = Math.min(batch1Start, op.start);
+      }
+      if (op.batchNumber === 2) {
+        batch2Start = Math.min(batch2Start, op.start);
+      }
+    });
+  });
+
+  // If there's no batch 2, cycle time equals batch duration
+  if (batch2Start === Infinity) {
+    return calculateBatchDuration(equipment);
+  }
+
+  return batch2Start - batch1Start;
 };
 
 type Point = {

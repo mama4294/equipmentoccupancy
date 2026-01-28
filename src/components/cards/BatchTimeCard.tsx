@@ -4,12 +4,10 @@ import { formatDuration } from "@/utils/time";
 import { Clock } from "lucide-react";
 
 const BatchTimeCard = ({ details }: { details: ProcessDetails }) => {
-  const { batchDuration, bottleneck, batchQty } = details;
+  const { batchDuration, cycleTime, batchQty } = details;
 
   const batchTiming = formatDuration(batchDuration);
-  const staggerTime = bottleneck
-    ? formatDuration(bottleneck.duration)
-    : { value: 0, unit: "hr" };
+  const cycleTiming = formatDuration(cycleTime);
 
   return (
     <Card className="max-w-md overflow-hidden transition-all hover:shadow-lg col-span-1">
@@ -38,8 +36,8 @@ const BatchTimeCard = ({ details }: { details: ProcessDetails }) => {
             <div className="flex justify-between items-baseline">
               <span className="text-sm font-medium ">Cycle Time</span>
               <div className="flex items-baseline gap-1 text-3xl font-bold tabular-nums leading-none">
-                {staggerTime.value}
-                <span className="text-sm font-normal">{staggerTime.unit}</span>
+                {cycleTiming.value}
+                <span className="text-sm font-normal">{cycleTiming.unit}</span>
               </div>
             </div>
             {/* <p>How long it takes to start and finish a single batch</p> */}
