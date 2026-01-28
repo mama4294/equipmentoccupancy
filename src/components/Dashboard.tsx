@@ -28,9 +28,9 @@ function Dashboard() {
             : "An error occurred when determining the schedule",
         variant: "destructive",
       });
-      return equipment as EquipmentWithTiming[];
+      return [];
     }
-  }, [equipment, campaign]);
+  }, [equipment, campaign, toast]);
 
   const processDetails = calculateProcessDetails(calculatedEquipment);
 

@@ -146,8 +146,6 @@ export const calculateTiming = (
   // Loop through each equipment
   for (let i = 0; i < multipleBatches.length; i++) {
     const newOperations = [...multipleBatches[i].operations];
-    const equipmentData = equipment.find((eq) => eq.id === multipleBatches[i].id);
-    const quantity = equipmentData?.quantity || 1;
 
     // Add copies of each operation to the equipment for each additional batch with a batch offset
     for (let batchIndex = 1; batchIndex < campaign.quantity; batchIndex++) {
