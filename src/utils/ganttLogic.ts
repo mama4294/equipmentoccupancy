@@ -175,6 +175,8 @@ export const calculateTiming = (
 
 const convertToSeconds = (value: number, unit: DurationUnit): number => {
   switch (unit) {
+    case "week":
+      return value * 7 * 24 * 60 * 60;
     case "day":
       return value * 24 * 60 * 60;
     case "hr":
@@ -182,6 +184,9 @@ const convertToSeconds = (value: number, unit: DurationUnit): number => {
     case "min":
       return value * 60;
     case "sec":
+      return value;
+    default:
+      // should never happen, but TypeScript wants an exhaustive return
       return value;
   }
 };

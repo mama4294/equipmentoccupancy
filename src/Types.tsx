@@ -27,9 +27,15 @@ export type ResourceOption = {
   unit: string;
 };
 
-export type DurationUnit = "day" | "hr" | "min" | "sec";
+// NOTE: the union is used throughout the app for user-facing time selectors.  We
+// extend it with "week" so dropdowns (e.g. campaign frequency) automatically
+// support the new unit.  Existing logic that iterates over durationOptions will
+// now include a week option, but most of the code continues to treat weeks like
+// longer days/hrs and will only display it when appropriate.
+export type DurationUnit = "week" | "day" | "hr" | "min" | "sec";
 
 export const durationOptions: { value: DurationUnit; label: string }[] = [
+  { value: "week", label: "Week" },
   { value: "day", label: "Day" },
   { value: "hr", label: "Hour" },
   { value: "min", label: "Min" },
