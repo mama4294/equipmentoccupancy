@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Equipment, EquipmentWithTiming, OperationWithTiming } from "../Types";
 import {
-  MoreVertical,
   Edit,
   Trash,
   Copy,
@@ -127,13 +126,12 @@ const EquipmentRow: React.FC<{
   return (
     <div className="relative h-8 mb-2">
       <div className="absolute left-0 w-32 pr-2 text-sm font-medium text-right flex items-center justify-end h-full">
-        {totalInstances > 1 ? (equipmentWithoutTiming.tagNames?.[instanceNumber - 1] || `${equipmentWithoutTiming.name} #${instanceNumber}`) : equipmentWithoutTiming.name}
-        {instanceNumber === 1 && (
+        {instanceNumber === 1 ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-8 w-8 p-0 ml-2">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
+              <span className="cursor-pointer hover:underline">
+                {totalInstances > 1 ? (equipmentWithoutTiming.tagNames?.[instanceNumber - 1] || `${equipmentWithoutTiming.name} #${instanceNumber}`) : equipmentWithoutTiming.name}
+              </span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
@@ -171,6 +169,10 @@ const EquipmentRow: React.FC<{
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+        ) : (
+          <span>
+            {totalInstances > 1 ? (equipmentWithoutTiming.tagNames?.[instanceNumber - 1] || `${equipmentWithoutTiming.name} #${instanceNumber}`) : equipmentWithoutTiming.name}
+          </span>
         )}
       </div>
       <div
