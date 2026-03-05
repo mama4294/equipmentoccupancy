@@ -271,7 +271,7 @@ const EditProcedure = ({
               </div>
             </div>
             <Label htmlFor="operations">Operations</Label>
-            <div id="operations">
+            <div id="operations" className="max-h-[400px] overflow-y-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
