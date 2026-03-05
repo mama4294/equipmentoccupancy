@@ -127,7 +127,7 @@ const EquipmentRow: React.FC<{
   return (
     <div className="relative h-8 mb-2">
       <div className="absolute left-0 w-32 pr-2 text-sm font-medium text-right flex items-center justify-end h-full">
-        {totalInstances > 1 ? `${equipmentWithoutTiming.name} #${instanceNumber}` : equipmentWithoutTiming.name}
+        {totalInstances > 1 ? (equipmentWithoutTiming.tagNames?.[instanceNumber - 1] || `${equipmentWithoutTiming.name} #${instanceNumber}`) : equipmentWithoutTiming.name}
         {instanceNumber === 1 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -210,7 +210,7 @@ const EditProcedure = ({
             multiple operations.
           </DrawerDescription>
         </DrawerHeader>
-        <div className="p-4 pb-0">
+        <div className="p-4 pb-0 max-h-[60vh] overflow-y-auto">
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5 mb-4">
               <Label htmlFor="title">Equipment Name</Label>
@@ -231,10 +231,15 @@ const EditProcedure = ({
                   variant="outline"
                   size="icon"
                   onClick={() =>
-                    setEquipment((prev) => ({
-                      ...prev,
-                      quantity: Math.max(1, prev.quantity - 1),
-                    }))
+                    setEquipment((prev) => {
+                      const newQuantity = Math.max(1, prev.quantity - 1);
+                      const newTagNames = prev.tagNames?.slice(0, newQuantity) || [];
+                      return {
+                        ...prev,
+                        quantity: newQuantity,
+                        tagNames: newTagNames.length > 0 ? newTagNames : undefined,
+                      };
+                    })
                   }
                   disabled={equipment.quantity <= 1}
                 >
@@ -247,10 +252,20 @@ const EditProcedure = ({
                   max={10}
                   value={equipment.quantity}
                   onChange={(e) =>
-                    setEquipment((prev) => ({ 
-                      ...prev, 
-                      quantity: Math.min(10, Math.max(0, Number(e.target.value))) 
-                    }))
+                    setEquipment((prev) => {
+                      const newQuantity = Math.min(10, Math.max(0, Number(e.target.value)));
+                      let newTagNames = prev.tagNames || [];
+                      if (newQuantity > newTagNames.length) {
+                        newTagNames = [...newTagNames, ...Array(newQuantity - newTagNames.length).fill("")];
+                      } else {
+                        newTagNames = newTagNames.slice(0, newQuantity);
+                      }
+                      return { 
+                        ...prev, 
+                        quantity: newQuantity,
+                        tagNames: newTagNames.length > 0 ? newTagNames : undefined,
+                      };
+                    })
                   }
                   className="w-20 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
@@ -259,10 +274,15 @@ const EditProcedure = ({
                   variant="outline"
                   size="icon"
                   onClick={() =>
-                    setEquipment((prev) => ({
-                      ...prev,
-                      quantity: Math.min(10, prev.quantity + 1),
-                    }))
+                    setEquipment((prev) => {
+                      const newQuantity = Math.min(10, prev.quantity + 1);
+                      const newTagNames = [...(prev.tagNames || []), ""].slice(0, newQuantity);
+                      return {
+                        ...prev,
+                        quantity: newQuantity,
+                        tagNames: newTagNames.length > 0 ? newTagNames : undefined,
+                      };
+                    })
                   }
                   disabled={equipment.quantity >= 10}
                 >
@@ -270,6 +290,28 @@ const EditProcedure = ({
                 </Button>
               </div>
             </div>
+            {equipment.quantity > 1 && (
+              <div className="flex flex-col space-y-1.5 mb-4">
+                <Label>Tag Names</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {Array.from({ length: equipment.quantity }, (_, index) => (
+                    <Input
+                      key={index}
+                      placeholder={`${equipment.name} #${index + 1}`}
+                      value={equipment.tagNames?.[index] || ""}
+                      onChange={(e) => {
+                        const newTagNames = [...(equipment.tagNames || Array(equipment.quantity).fill(""))];
+                        newTagNames[index] = e.target.value;
+                        setEquipment((prev) => ({
+                          ...prev,
+                          tagNames: newTagNames,
+                        }));
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
             <Label htmlFor="operations">Operations</Label>
             <div id="operations" className="max-h-[400px] overflow-y-auto">
               <Table>

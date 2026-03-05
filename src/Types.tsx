@@ -64,6 +64,7 @@ export type Equipment = {
   id: string;
   name: string;
   quantity: number;
+  tagNames?: string[];
   operations: Operation[];
 };
 
