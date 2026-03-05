@@ -215,25 +215,8 @@ const OperationBar: React.FC<{
     ((operation.end - operation.start) / maxDuration) * 100;
 
   const operationColor = (() => {
-    switch (operation.batchNumber) {
-      case 1:
-      case 6:
-        return "bg-chart-1";
-      case 2:
-      case 7:
-        return "bg-chart-2";
-      case 3:
-      case 8:
-        return "bg-chart-3";
-      case 4:
-      case 9:
-        return "bg-chart-4";
-      case 5:
-      case 10:
-        return "bg-chart-5";
-      default:
-        return "bg-gray-500";
-    }
+    const colorIndex = ((operation.batchNumber - 1) % 5) + 1;
+    return `bg-chart-${colorIndex}`;
   })();
 
   return (
