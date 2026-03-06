@@ -27,7 +27,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { Button } from "./ui/button";
 import { useStore } from "../Store";
 import EditProcedure from "./EditEquipment";
 import { cn } from "@/lib/utils";
