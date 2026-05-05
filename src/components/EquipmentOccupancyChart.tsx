@@ -31,6 +31,15 @@ import { useStore } from "../Store";
 import EditProcedure from "./EditEquipment";
 import { cn } from "@/lib/utils";
 
+/** Full class names so Tailwind JIT includes them (dynamic `bg-chart-${n}` is not scanned). */
+const CHART_BAR_BG = [
+  "bg-chart-1",
+  "bg-chart-2",
+  "bg-chart-3",
+  "bg-chart-4",
+  "bg-chart-5",
+] as const;
+
 export default function EOChart({
   equipmentWithTiming,
 }: {
@@ -44,9 +53,11 @@ export default function EOChart({
   console.log("equipmentWithTiming: ", equipmentWithTiming);
 
   const maxDuration = useMemo(() => {
-    return Math.max(
-      ...equipmentWithTiming.flatMap((p) => p.operations.map((op) => op.end))
+    const ends = equipmentWithTiming.flatMap((p) =>
+      p.operations.map((op) => op.end)
     );
+    if (ends.length === 0) return 1;
+    return Math.max(1, ...ends);
   }, [equipmentWithTiming]);
 
   return (
@@ -213,10 +224,8 @@ const OperationBar: React.FC<{
   const widthPercentage =
     ((operation.end - operation.start) / maxDuration) * 100;
 
-  const operationColor = (() => {
-    const colorIndex = ((operation.batchNumber - 1) % 5) + 1;
-    return `bg-chart-${colorIndex}`;
-  })();
+  const operationColor =
+    CHART_BAR_BG[((operation.batchNumber - 1) % CHART_BAR_BG.length)];
 
   return (
     <TooltipProvider>
